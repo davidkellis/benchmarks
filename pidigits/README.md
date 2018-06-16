@@ -1,6 +1,6 @@
 # pidigits Benchmark
 
-This benchmark is part of The Computer Language Benchmarks Game.
+This benchmark is part of [The Computer Language Benchmarks Game](https://benchmarksgame-team.pages.debian.net/benchmarksgame/).
 
 The rules, as taken from https://benchmarksgame-team.pages.debian.net/benchmarksgame/description/pidigits.html#pidigits, are:
 
