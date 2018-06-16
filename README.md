@@ -64,3 +64,97 @@ COPY count_to_a_million/ruby2.5.0/run.rb .      # copy the implementation of the
 
 CMD ["./time.sh", "ruby", "run.rb"]     # run the benchmark implementation via the time.sh script
 ```
+
+## Sample Run
+
+```
+$ ./run.rb
+Running helloworld benchmark suite
+  helloworld/ruby2.5.1
+  helloworld/crystal0.25.0
+
+Running base64 benchmark suite
+  base64/ruby2.5.1
+  base64/crystal0.25.0
+
+Running json benchmark suite
+Running setup for json benchmark
+  json/ruby2.5.1
+  json/crystal0.25.0
+Running teardown for json benchmark
+
+Running pidigits benchmark suite
+  pidigits/ruby2.5.1
+  pidigits/crystal0.25.0
+  pidigits/go1.10.3
+
+Metrics:
+{"helloworld:ruby2.5.1:time"=>"1.66e-05s",
+ "helloworld:ruby2.5.1:process_user_time"=>"0.04",
+ "helloworld:ruby2.5.1:process_system_time"=>"0.02",
+ "helloworld:ruby2.5.1:process_real_time"=>"0:00.06",
+ "helloworld:ruby2.5.1:process_percent_cpu_time"=>"90%",
+ "helloworld:ruby2.5.1:process_max_rss_mb"=>8.5078125,
+ "helloworld:ruby2.5.1:process_avg_rss_mb"=>0.0,
+ "helloworld:ruby2.5.1:process_avg_total_mem_mb"=>0.0,
+ "helloworld:crystal0.25.0:process_user_time"=>"0.00",
+ "helloworld:crystal0.25.0:process_system_time"=>"0.00",
+ "helloworld:crystal0.25.0:process_real_time"=>"0:00.00",
+ "helloworld:crystal0.25.0:process_percent_cpu_time"=>"0%",
+ "helloworld:crystal0.25.0:process_max_rss_mb"=>3.109375,
+ "helloworld:crystal0.25.0:process_avg_rss_mb"=>0.0,
+ "helloworld:crystal0.25.0:process_avg_total_mem_mb"=>0.0,
+ "helloworld:crystal0.25.0:time"=>"00:00:00.000027000s",
+ "base64:ruby2.5.1:time"=>"2.6429187s",
+ "base64:ruby2.5.1:process_user_time"=>"2.54",
+ "base64:ruby2.5.1:process_system_time"=>"0.19",
+ "base64:ruby2.5.1:process_real_time"=>"0:02.74",
+ "base64:ruby2.5.1:process_percent_cpu_time"=>"99%",
+ "base64:ruby2.5.1:process_max_rss_mb"=>193.265625,
+ "base64:ruby2.5.1:process_avg_rss_mb"=>0.0,
+ "base64:ruby2.5.1:process_avg_total_mem_mb"=>0.0,
+ "base64:crystal0.25.0:process_user_time"=>"2.16",
+ "base64:crystal0.25.0:process_system_time"=>"0.03",
+ "base64:crystal0.25.0:process_real_time"=>"0:02.22",
+ "base64:crystal0.25.0:process_percent_cpu_time"=>"98%",
+ "base64:crystal0.25.0:process_max_rss_mb"=>54.14453125,
+ "base64:crystal0.25.0:process_avg_rss_mb"=>0.0,
+ "base64:crystal0.25.0:process_avg_total_mem_mb"=>0.0,
+ "json:ruby2.5.1:time"=>"7.2558353s",
+ "json:ruby2.5.1:process_user_time"=>"7.18",
+ "json:ruby2.5.1:process_system_time"=>"0.65",
+ "json:ruby2.5.1:process_real_time"=>"0:07.86",
+ "json:ruby2.5.1:process_percent_cpu_time"=>"99%",
+ "json:ruby2.5.1:process_max_rss_mb"=>815.3203125,
+ "json:ruby2.5.1:process_avg_rss_mb"=>0.0,
+ "json:ruby2.5.1:process_avg_total_mem_mb"=>0.0,
+ "json:crystal0.25.0:time"=>"00:00:02.415149000s",
+ "json:crystal0.25.0:process_user_time"=>"2.35",
+ "json:crystal0.25.0:process_system_time"=>"0.48",
+ "json:crystal0.25.0:process_real_time"=>"0:02.58",
+ "json:crystal0.25.0:process_percent_cpu_time"=>"109%",
+ "json:crystal0.25.0:process_max_rss_mb"=>1035.578125,
+ "json:crystal0.25.0:process_avg_rss_mb"=>0.0,
+ "json:crystal0.25.0:process_avg_total_mem_mb"=>0.0,
+ "pidigits:ruby2.5.1:process_user_time"=>"8.01",
+ "pidigits:ruby2.5.1:process_system_time"=>"0.56",
+ "pidigits:ruby2.5.1:process_real_time"=>"0:08.61",
+ "pidigits:ruby2.5.1:process_percent_cpu_time"=>"99%",
+ "pidigits:ruby2.5.1:process_max_rss_mb"=>158.52734375,
+ "pidigits:ruby2.5.1:process_avg_rss_mb"=>0.0,
+ "pidigits:ruby2.5.1:process_avg_total_mem_mb"=>0.0,
+ "pidigits:crystal0.25.0:process_user_time"=>"6.79",
+ "pidigits:crystal0.25.0:process_system_time"=>"1.21",
+ "pidigits:crystal0.25.0:process_real_time"=>"0:08.81",
+ "pidigits:crystal0.25.0:process_percent_cpu_time"=>"90%",
+ "pidigits:crystal0.25.0:process_max_rss_mb"=>9.42578125,
+ "pidigits:crystal0.25.0:process_avg_rss_mb"=>0.0,
+ "pidigits:crystal0.25.0:process_avg_total_mem_mb"=>0.0,
+ "pidigits:go1.10.3:process_user_time"=>"1.30",
+ "pidigits:go1.10.3:process_system_time"=>"0.03",
+ "pidigits:go1.10.3:process_real_time"=>"0:01.32",
+ "pidigits:go1.10.3:process_percent_cpu_time"=>"100%",
+ "pidigits:go1.10.3:process_max_rss_mb"=>8.953125,
+ "pidigits:go1.10.3:process_avg_rss_mb"=>0.0,
+ "pidigits:go1.10.3:process_avg_total_mem_mb"=>0.0}
+```
