@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Language Benchmarks</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.18/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/rowgroup/1.0.3/css/rowGroup.dataTables.min.css">
+
+    <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/rowgroup/1.0.3/js/dataTables.rowGroup.min.js"></script>
+  </head>
+  <body>
+    <table id="metrics" class="display" width="100%"></table>
+    
+    <script type="text/javascript">
+      var dataSet = [["binarytrees","ruby2.5.1","137.46","3.24","0:44.36","317%",411.93359375,null],["binarytrees","gcc8.1.0","7.72","0.24","0:02.35","338%",130.98046875,null],["binarytrees","go1.10.3","90.20","12.08","0:32.05","319%",386.3046875,null],["helloworld","ruby2.5.1","0.08","0.00","0:00.11","67%",8.73046875,"1.94e-05s"],["helloworld","crystal0.25.0","0.00","0.00","0:00.00","0%",3.0625,"00:00:00.000017000s"],["base64","ruby2.5.1","2.54","0.09","0:02.64","99%",196.59375,"2.5437507s"],["base64","crystal0.25.0","1.96","0.05","0:02.01","99%",60.734375,null],["json","ruby2.5.1","7.58","0.52","0:08.12","99%",814.6953125,"7.5525335s"],["json","crystal0.25.0","2.68","0.56","0:02.70","119%",1035.5390625,"00:00:02.500144000s"],["pidigits","ruby2.5.1","7.76","0.68","0:08.48","99%",158.6328125,null],["pidigits","crystal0.25.0","7.60","2.00","0:09.22","104%",9.5234375,null],["pidigits","gcc8.1.0","0.77","0.00","0:00.78","98%",2.171875,null],["pidigits","go1.10.3","1.32","0.02","0:01.32","101%",9.22265625,null]];
+      $(document).ready(function() {
+        $('#metrics').DataTable({
+          paging: false,
+          data: dataSet,
+          columns: [{"title":"benchmark_name"},{"title":"language"},{"title":"process_user_time"},{"title":"process_system_time"},{"title":"process_real_time"},{"title":"process_percent_cpu_time"},{"title":"process_max_rss_mb"},{"title":"time"}],
+          order: [[ 0, 'asc' ], [ 4, 'asc' ]],
+          rowGroup: {
+            dataSrc: 0
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
