@@ -120,9 +120,11 @@ def render_html_table(metrics, path)
     <head>
       <title>Language Benchmarks</title>
       <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.18/css/jquery.dataTables.min.css">
+      <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/rowgroup/1.0.3/css/rowGroup.dataTables.min.css">
 
       <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
       <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
+      <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/rowgroup/1.0.3/js/dataTables.rowGroup.min.js"></script>
     </head>
     <body>
       <table id="metrics" class="display" width="100%"></table>
@@ -134,7 +136,10 @@ def render_html_table(metrics, path)
             paging: false,
             data: dataSet,
             columns: #{ JSON.dump(column_specs) },
-            order: [[ 0, 'asc' ], [ #{column_name_to_position_map["process_real_time"]}, 'asc' ]]
+            order: [[ 0, 'asc' ], [ #{column_name_to_position_map["process_real_time"]}, 'asc' ]],
+            rowGroup: {
+              dataSrc: 0
+            }
           });
         });
       </script>
