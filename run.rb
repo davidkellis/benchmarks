@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+require 'json'
 require 'open3'
 require 'pp'
 
@@ -77,6 +78,71 @@ def main
 
   puts "Metrics:"
   pp all_metrics
+
+  render_html_table(all_metrics, "metrics.html")
+end
+
+# metrics is a Hash of the form:
+# {
+#   "helloworld:ruby2.5.1:time"=>"8.657e-06s",
+#   "helloworld:ruby2.5.1:process_user_time"=>"0.06",
+#   "helloworld:ruby2.5.1:process_system_time"=>"0.01",
+#   "helloworld:ruby2.5.1:process_real_time"=>"0:00.07",
+#   "helloworld:ruby2.5.1:process_percent_cpu_time"=>"94%",
+#   "helloworld:ruby2.5.1:process_max_rss_mb"=>8.703125,
+#   "helloworld:ruby2.5.1:process_avg_rss_mb"=>0.0,
+#   "helloworld:ruby2.5.1:process_avg_total_mem_mb"=>0.0
+# }
+def render_html_table(metrics, path)
+  column_names = ["benchmark_name", "language"] + metrics.keys.map {|metric_fq_name| metric_fq_name.split(":").last }.uniq
+  column_name_to_position_map = column_names.each_with_index.reduce({}) {|memo, (name, i)| memo.merge({ name => i }) }
+
+  column_specs = column_names.map {|name| {"title" => name} }
+
+  row_hashes = metrics.reduce({}) do |memo, (metric_fq_name, metric_value)|
+    benchmark_name, language, metric_name = metric_fq_name.split(":")
+    memo["#{benchmark_name}:#{language}"] ||= {}
+    memo["#{benchmark_name}:#{language}"][metric_name] = metric_value
+    memo
+  end
+
+  rows = row_hashes.map do |benchmark_implementation_name, metrics_hash|
+    row = benchmark_implementation_name.split(":")
+    metrics_hash.each do |metric_name, metric_value|
+      row[column_name_to_position_map[metric_name]] = metric_value
+    end
+    row.fill(nil, row.length...column_names.count)    # account for any missing columns at the end
+  end
+
+  html = <<~EOF
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <title>Language Benchmarks</title>
+      <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.18/css/jquery.dataTables.min.css">
+
+      <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+      <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
+    </head>
+    <body>
+      <table id="metrics" class="display" width="100%"></table>
+      
+      <script type="text/javascript">
+        var dataSet = #{ JSON.dump(rows) };
+        $(document).ready(function() {
+          $('#metrics').DataTable({
+            paging: false,
+            data: dataSet,
+            columns: #{ JSON.dump(column_specs) },
+            order: [[ 0, 'asc' ], [ #{column_name_to_position_map["process_real_time"]}, 'asc' ]]
+          });
+        });
+      </script>
+    </body>
+  </html>
+  EOF
+
+  File.open(path, 'w') {|f| f.puts(html) }
 end
 
 main if __FILE__ == $0
