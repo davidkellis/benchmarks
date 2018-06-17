@@ -45,17 +45,17 @@ def main
           if line.start_with?("#{benchmark_output_prefix}", "benchmark_process_metrics")
             if line.start_with?("benchmark_process_metrics")
               # GNU time is being executed like this:
-              # env time --format="benchmark_process_metrics: user=%U sys=%S real=%E percent_cpu=%P max_rss_kb=%M avg_rss_kb=%t avg_total_mem_kb=%K" "$@"
+              # env time --format="benchmark_process_metrics: user=%U sys=%S real=%E percent_cpu=%P max_rss_kb=%M" "$@"
               # so we need to pull the values out of that format string
-              match = /^benchmark_process_metrics: user=(.*) sys=(.*) real=(.*) percent_cpu=(.*) max_rss_kb=(.*) avg_rss_kb=(.*) avg_total_mem_kb=(.*)$/.match(line)
+              match = /^benchmark_process_metrics: user=(.*) sys=(.*) real=(.*) percent_cpu=(.*) max_rss_kb=(.*)$/.match(line)
               user_time, system_time, real_time, percent_cpu, max_rss_kb, avg_rss_kb, avg_total_mem_kb = match.captures
               metrics["#{benchmark_output_prefix}:process_user_time"] = user_time
               metrics["#{benchmark_output_prefix}:process_system_time"] = system_time
               metrics["#{benchmark_output_prefix}:process_real_time"] = real_time
               metrics["#{benchmark_output_prefix}:process_percent_cpu_time"] = percent_cpu
               metrics["#{benchmark_output_prefix}:process_max_rss_mb"] = max_rss_kb.to_f / 1024.0
-              metrics["#{benchmark_output_prefix}:process_avg_rss_mb"] = avg_rss_kb.to_f / 1024.0
-              metrics["#{benchmark_output_prefix}:process_avg_total_mem_mb"] = avg_total_mem_kb.to_f / 1024.0
+              # metrics["#{benchmark_output_prefix}:process_avg_rss_mb"] = avg_rss_kb.to_f / 1024.0
+              # metrics["#{benchmark_output_prefix}:process_avg_total_mem_mb"] = avg_total_mem_kb.to_f / 1024.0
             else
               metric_name, metric_value = line.split("=").map(&:strip)
               metrics[metric_name] = metric_value
@@ -76,7 +76,7 @@ def main
     puts
   end
 
-  puts "Metrics:"
+  puts "Metrics (also written to metrics.html):"
   pp all_metrics
 
   render_html_table(all_metrics, "metrics.html")
@@ -89,9 +89,7 @@ end
 #   "helloworld:ruby2.5.1:process_system_time"=>"0.01",
 #   "helloworld:ruby2.5.1:process_real_time"=>"0:00.07",
 #   "helloworld:ruby2.5.1:process_percent_cpu_time"=>"94%",
-#   "helloworld:ruby2.5.1:process_max_rss_mb"=>8.703125,
-#   "helloworld:ruby2.5.1:process_avg_rss_mb"=>0.0,
-#   "helloworld:ruby2.5.1:process_avg_total_mem_mb"=>0.0
+#   "helloworld:ruby2.5.1:process_max_rss_mb"=>8.703125
 # }
 def render_html_table(metrics, path)
   column_names = ["benchmark_name", "language"] + metrics.keys.map {|metric_fq_name| metric_fq_name.split(":").last }.uniq
