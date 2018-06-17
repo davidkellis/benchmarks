@@ -2,6 +2,8 @@
 
 This project aims to replicate a variety of benchmarks taken from various sources.
 
+A sample benchmark report run on a MacBook Pro (Retina, 13-inch, Early 2015, 2.7 GHz Intel Core i5, 16 GB 1867 MHz DDR3) can be seen at https://davidkellis.github.io/benchmarks/.
+
 Every benchmark implementation runs in a self-contained Docker container. Necessary build and runtime artifacts are copied into the container.
 
 Benchmarks are pulled from:
@@ -69,6 +71,8 @@ CMD ["./time.sh", "ruby", "run.rb"]     # run the benchmark implementation via t
 ## Sample Run
 
 The following sample run was performed on a MacBook Pro (Retina, 13-inch, Early 2015), 2.7 GHz Intel Core i5, 16 GB 1867 MHz DDR3.
+
+The corresponding html report can be viewed at https://davidkellis.github.io/benchmarks/.
 
 ```
 $ ./run.rb
