@@ -9,6 +9,8 @@ def main
 
   all_metrics = {}
 
+  t1 = Time.now
+
   benchmark_directories = Dir.glob('*').select { |f| File.directory?(f) }
   benchmark_directories.each do |benchmark_directory|
     next unless desired_benchmarks.empty? || desired_benchmarks.any? {|benchmark_path| benchmark_path.start_with?(benchmark_directory) }
@@ -75,6 +77,10 @@ def main
 
     puts
   end
+
+  t2 = Time.now
+  puts "All benchmarks run in #{t2 - t1} seconds."
+  puts
 
   puts "Metrics (also written to index.html):"
   pp all_metrics
