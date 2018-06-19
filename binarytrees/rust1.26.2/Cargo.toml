@@ -1,0 +1,8 @@
+[package]
+name = "binarytrees"
+version = "0.1.0"
+authors = ["https://benchmarksgame-team.pages.debian.net/benchmarksgame/program/binarytrees-rust-2.html"]
+
+[dependencies]
+typed-arena = "1.3.0"
+rayon = "1.0.1"

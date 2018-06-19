@@ -21,7 +21,7 @@ Please don't implement your own custom ["arena"](http://www.stroustrup.com/bs_fa
 ## The work
 The work is to fully create perfect binary trees - before any tree nodes are GC'd - using at-minimum the number of allocations of [Jeremy Zerfas's C program](https://benchmarksgame-team.pages.debian.net/benchmarksgame/program/binarytrees-gcc-3.html). Don't optimize away the work.
 
-How to implement
+## How to implement
 We ask that contributed programs not only give the correct result, but also use the same algorithm to calculate that result.
 
 Each program should:

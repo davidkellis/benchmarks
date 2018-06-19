@@ -1,0 +1,6 @@
+[package]
+name = "pidigits"
+version = "0.1.0"
+authors = ["https://benchmarksgame-team.pages.debian.net/benchmarksgame/program/pidigits-rust-3.html"]
+
+[dependencies]

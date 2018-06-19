@@ -76,10 +76,10 @@ def main
     puts
   end
 
-  puts "Metrics (also written to metrics.html):"
+  puts "Metrics (also written to index.html):"
   pp all_metrics
 
-  render_html_table(all_metrics, "metrics.html")
+  render_html_table(all_metrics, "index.html")
 end
 
 # metrics is a Hash of the form:

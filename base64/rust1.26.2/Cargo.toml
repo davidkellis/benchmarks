@@ -1,0 +1,8 @@
+[package]
+name = "base64"
+version = "0.1.0"
+authors = ["See commit history on https://github.com/kostya/benchmarks/tree/master/base64/base64.rs"]
+
+[dependencies]
+base64 = "0.9.0"
+time = "0.1"
