@@ -2,9 +2,19 @@
 
 require 'json'
 require 'open3'
+require 'optparse'
 require 'pp'
 
 def main
+  verbose = false
+  OptionParser.new do |opts|
+    opts.banner = "Usage: run.rb [options] [desired benchmarks]"
+
+    opts.on("-v", "--[no-]verbose", "Run verbosely") do |v|
+      verbose = v
+    end
+  end.parse!
+
   desired_benchmarks = ARGV
 
   all_metrics = {}
@@ -36,11 +46,16 @@ def main
         puts "  #{language_directory}"
 
         # 1. build docker image
-        `docker build -t #{docker_container_name} -f #{language_directory}/Dockerfile .`
+        cmd = "docker build -t #{docker_container_name} -f #{language_directory}/Dockerfile ."
+        puts "    #{cmd}" if verbose
+        program_output = `#{cmd}`
+        puts "    #{program_output}" if verbose
 
         # 2. run docker container
-        # todo, run this in a way that can extract stdout and stderr separately
-        program_output, status = Open3.capture2e("docker run --rm #{docker_container_name}")    # stdout and stderr are merged into the first return value
+        cmd = "docker run --rm #{docker_container_name}"
+        puts "    #{cmd}" if verbose
+        program_output, status = Open3.capture2e(cmd)    # stdout and stderr are merged into the first return value
+        puts "    #{program_output}" if verbose
 
         # 3. pull metrics out of program output, as well as GNU time
         metrics_kv_pairs = program_output.lines.map(&:strip).reduce({}) do |metrics, line|

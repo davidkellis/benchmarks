@@ -10,6 +10,7 @@ Benchmarks are pulled from:
 - https://benchmarksgame-team.pages.debian.net/benchmarksgame/
 - https://github.com/kostya/benchmarks
 - https://github.com/kostya/crystal-benchmarks-game
+- https://github.com/attractivechaos/plb
 - https://github.com/trizen/language-benchmarks
 - https://github.com/JuliaLang/Microbenchmarks
 
