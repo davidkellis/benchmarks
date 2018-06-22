@@ -1,14 +1,14 @@
-FROM crystallang/crystal:0.25.0
+FROM gcc:8.1.0
 
-RUN apt-get update && apt-get install time
+RUN apt-get update && apt-get install -y time libgmp-dev
 
 WORKDIR /app
 
 # keep in mind that the docker build command is being run from the benchmarks/ project's root directory
 # and the context directory is being specified as the benchmarks/ root directory
 COPY time.sh .
-COPY matrixmultiply/crystal0.25.0/run.cr .
+COPY pidigits/gcc8.1.0gmp/*.c .
 
-RUN crystal build run.cr --release
+RUN gcc -pipe -Wall -O3 -fomit-frame-pointer -march=native run.c -o app -lgmp
 
-CMD ["./time.sh", "./run", "1"]
+CMD ["./time.sh", "./app", "10000"]

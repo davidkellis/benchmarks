@@ -1,13 +1,14 @@
-FROM python:3.6.5
+FROM ruby:2.5.1
 
-RUN apt-get update && apt-get install time
+RUN apt-get update && apt-get install -y time libgmp-dev
 
 WORKDIR /app
 
 # keep in mind that the docker build command is being run from the benchmarks/ project's root directory
 # and the context directory is being specified as the benchmarks/ root directory
 COPY time.sh .
-COPY sudoku/sudoku.txt .
-COPY sudoku/python3.6.5/run.py .
+COPY pidigits/ruby2.5.1gmp/run.rb .
 
-CMD ["./time.sh", "python", "run.py"]
+RUN gem install gmp
+
+CMD ["./time.sh", "ruby", "run.rb", "10000"]

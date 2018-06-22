@@ -22,7 +22,7 @@ import (
 	"os"
 	"strconv"
 
-	"math/big"
+	big "github.com/ncw/gmp"
 )
 
 var n = 0

@@ -1,14 +1,15 @@
-FROM golang:1.10
+FROM microsoft/dotnet:2.1.301-sdk
 
 RUN apt-get update && apt-get install -y time
 
-WORKDIR /go/src/app
+WORKDIR /app
 
 # keep in mind that the docker build command is being run from the benchmarks/ project's root directory
 # and the context directory is being specified as the benchmarks/ root directory
 COPY time.sh .
-COPY pidigits/go1.10.3/*.go .
+COPY pidigits/csharp-dotnetcore2.1.301/*.cs .
+COPY pidigits/csharp-dotnetcore2.1.301/*.csproj .
 
-RUN go install .
+RUN dotnet build -c Release
 
-CMD ["./time.sh", "app", "10000"]
+CMD ["./time.sh", "dotnet", "bin/Release/netcoreapp2.1/pidigits.dll", "10000"]

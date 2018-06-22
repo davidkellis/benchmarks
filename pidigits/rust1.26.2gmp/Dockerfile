@@ -1,13 +1,14 @@
-FROM python:3.6.5
+FROM rust:1.26.2
 
-RUN apt-get update && apt-get install time
+RUN apt-get update && apt-get install -y time libgmp-dev
 
-WORKDIR /app
+WORKDIR /pidigits
 
 # keep in mind that the docker build command is being run from the benchmarks/ project's root directory
 # and the context directory is being specified as the benchmarks/ root directory
 COPY time.sh .
-COPY sudoku/sudoku.txt .
-COPY sudoku/python3.6.5/run.py .
+COPY pidigits/rust1.26.2gmp/ ./
 
-CMD ["./time.sh", "python", "run.py"]
+RUN cargo install
+
+CMD ["./time.sh", "pidigits", "10000"]

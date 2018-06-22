@@ -9,4 +9,4 @@ WORKDIR /app
 COPY time.sh .
 COPY pidigits/ruby2.5.1/run.rb .
 
-CMD ["./time.sh", "ruby", "run.rb"]
+CMD ["./time.sh", "ruby", "run.rb", "10000"]
