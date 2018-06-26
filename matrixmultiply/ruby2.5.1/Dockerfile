@@ -9,4 +9,4 @@ WORKDIR /app
 COPY time.sh .
 COPY matrixmultiply/ruby2.5.1/run.rb .
 
-CMD ["./time.sh", "ruby", "run.rb", "1"]
+CMD ["./time.sh", "ruby", "run.rb", "1000"]

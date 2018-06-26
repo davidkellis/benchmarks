@@ -1,3 +1,5 @@
+# Taken from https://github.com/kostya/benchmarks/blob/master/base64/test.rb
+
 require "base64"
 
 t1 = Time.now

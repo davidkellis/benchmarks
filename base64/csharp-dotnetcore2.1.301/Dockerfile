@@ -1,16 +1,15 @@
-FROM golang:1.10
+FROM microsoft/dotnet:2.1.301-sdk
 
 RUN apt-get update && apt-get install -y time
 
-WORKDIR /go/src/app
+WORKDIR /app
 
 # keep in mind that the docker build command is being run from the benchmarks/ project's root directory
 # and the context directory is being specified as the benchmarks/ root directory
 COPY time.sh .
-COPY matrixmultiply/go1.10.3gonum/*.go .
+COPY base64/csharp-dotnetcore2.1.301/*.cs .
+COPY base64/csharp-dotnetcore2.1.301/*.csproj .
 
-RUN go get -u gonum.org/v1/gonum/...
+RUN dotnet build -c Release
 
-RUN go install .
-
-CMD ["./time.sh", "app", "1"]
+CMD ["./time.sh", "dotnet", "bin/Release/netcoreapp2.1/base64.dll"]

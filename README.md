@@ -22,7 +22,7 @@ Benchmarks are pulled from:
 3. `git clone git@github.com:davidkellis/benchmarks.git`
 4. `cd benchmarks`
 5. `./run.rb`
-6. Open ./metrics.html in a web browser to view the results.
+6. Open `./index.html` in a web browser to view the results.
 
 
 ## How to add benchmarks
