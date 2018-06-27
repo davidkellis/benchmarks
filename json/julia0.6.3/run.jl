@@ -3,7 +3,7 @@
 import JSON
 
 function main()
-  text = open(readall, "sample.json")
+  text = open(readstring, "sample.json")
   jobj = JSON.parse(text)
   coordinates = jobj["coordinates"]
   len = length(coordinates)
