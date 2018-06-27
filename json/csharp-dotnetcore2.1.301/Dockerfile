@@ -1,4 +1,4 @@
-FROM ruby:2.5.1
+FROM microsoft/dotnet:2.1.301-sdk
 
 RUN apt-get update && apt-get install -y time
 
@@ -8,6 +8,9 @@ WORKDIR /app
 # and the context directory is being specified as the benchmarks/ root directory
 COPY time.sh .
 COPY json/sample.json .
-COPY json/ruby2.5.1/run.rb .
+COPY json/csharp-dotnetcore2.1.301/*.cs .
+COPY json/csharp-dotnetcore2.1.301/*.csproj .
 
-CMD ["./time.sh", "ruby", "run.rb"]
+RUN dotnet build -c Release
+
+CMD ["./time.sh", "dotnet", "bin/Release/netcoreapp2.1/json.dll"]

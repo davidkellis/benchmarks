@@ -1,6 +1,6 @@
-FROM ruby:2.5.1
+FROM julia:0.6.3
 
-RUN apt-get update && apt-get install -y time
+RUN apt-get update && apt-get install time
 
 WORKDIR /app
 
@@ -8,6 +8,8 @@ WORKDIR /app
 # and the context directory is being specified as the benchmarks/ root directory
 COPY time.sh .
 COPY json/sample.json .
-COPY json/ruby2.5.1/run.rb .
+COPY json/julia0.6.3/run.jl .
 
-CMD ["./time.sh", "ruby", "run.rb"]
+RUN julia -e 'Pkg.add("JSON")'
+
+CMD ["./time.sh", "julia", "run.jl"]

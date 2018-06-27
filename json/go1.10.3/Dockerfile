@@ -1,13 +1,15 @@
-FROM ruby:2.5.1
+FROM golang:1.10
 
 RUN apt-get update && apt-get install -y time
 
-WORKDIR /app
+WORKDIR /go/src/app
 
 # keep in mind that the docker build command is being run from the benchmarks/ project's root directory
 # and the context directory is being specified as the benchmarks/ root directory
 COPY time.sh .
 COPY json/sample.json .
-COPY json/ruby2.5.1/run.rb .
+COPY json/go1.10.3/*.go .
 
-CMD ["./time.sh", "ruby", "run.rb"]
+RUN go install .
+
+CMD ["./time.sh", "app"]

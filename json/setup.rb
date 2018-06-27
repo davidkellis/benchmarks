@@ -4,21 +4,17 @@ require 'json'
 
 # this method captures the json file generation logic from https://github.com/kostya/benchmarks/blob/master/json/generate_json.rb
 def write_json_file(path)
-  coords = []
-
-  1000000.times do
-    coords << {
-      'x' => rand,
-      'y' => rand,
-      'z' => rand,
-      'name' => ('a'..'z').to_a.shuffle[0..5].join + ' ' + rand(10000).to_s,
-      'opts' => {'1' => [1, true]},
-    }
-  end
-
   json = {
-    'coordinates' => coords,
-    'info' => 'some info'
+    'info' => 'some info',
+    'coordinates' => 1_000_000.times.map do
+      {
+        'x' => rand,
+        'y' => rand,
+        'z' => rand,
+        'name' => ('a'..'z').to_a.shuffle[0..5].join + ' ' + rand(10000).to_s,
+        'opts' => {'1' => [1, true]},
+      }
+    end
   }
 
   File.open(path, 'w') {|f| JSON.dump(json, f) }

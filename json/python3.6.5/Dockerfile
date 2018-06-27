@@ -1,4 +1,4 @@
-FROM ruby:2.5.1
+FROM python:3.6.5
 
 RUN apt-get update && apt-get install -y time
 
@@ -8,6 +8,6 @@ WORKDIR /app
 # and the context directory is being specified as the benchmarks/ root directory
 COPY time.sh .
 COPY json/sample.json .
-COPY json/ruby2.5.1/run.rb .
+COPY json/python3.6.5/run.py .
 
-CMD ["./time.sh", "ruby", "run.rb"]
+CMD ["./time.sh", "python", "run.py"]
