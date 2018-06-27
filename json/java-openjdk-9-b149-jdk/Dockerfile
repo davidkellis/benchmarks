@@ -12,7 +12,7 @@ RUN curl -o jackson-annotations.jar http://repo1.maven.org/maven2/com/fasterxml/
 # and the context directory is being specified as the benchmarks/ root directory
 COPY time.sh .
 COPY json/sample.json .
-COPY json/java-openjdk-9-b149-jdk/*.java .
+COPY json/java-openjdk-9-b149-jdk/*.java ./
 
 RUN javac -cp jackson-core.jar:jackson-databind.jar:jackson-annotations.jar:. json.java
 
