@@ -11,6 +11,7 @@ Benchmarks are pulled from:
 - https://github.com/kostya/benchmarks
 - https://github.com/kostya/crystal-benchmarks-game
 - https://github.com/attractivechaos/plb
+- https://github.com/drujensen/fib
 - https://github.com/trizen/language-benchmarks
 - https://github.com/JuliaLang/Microbenchmarks
 
