@@ -1,6 +1,6 @@
-FROM node:10.5.0
+FROM java:openjdk-9-b149-jdk
 
-RUN apt-get update && apt-get install -y time
+RUN apt-get update && apt-get install -y time curl
 
 WORKDIR /app
 
@@ -8,8 +8,8 @@ WORKDIR /app
 # and the context directory is being specified as the benchmarks/ root directory
 COPY time.sh .
 COPY tapelang-alphabet/benchmark.tape .
-COPY tapelang-alphabet/javascript-node10.5.0/run.js .
+COPY tapelang-alphabet/java-openjdk-9-b149-jdk/*.java ./
 
-RUN npm install readline-sync
+RUN javac tapelang.java
 
-CMD ["./time.sh", "node", "run.js", "benchmark.tape"]
+CMD ./time.sh java tapelang benchmark.tape

@@ -1,20 +1,9 @@
 // Taken from https://github.com/kostya/benchmarks/blob/master/brainfuck2/bf.js
 
-var inputQueue = "";
-
-const readline = require('readline');
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
-
-rl.on('line', (line) => {
-  inputQueue = inputQueue + line;
-  // console.log(`Received: ${line}`);
-});
+var readlineSync = require('readline-sync');
 
 function getc() {
-  
+  return readlineSync.keyIn();
 }
 
 function StringIterator(str){
@@ -85,7 +74,35 @@ var Brainfuck = function(text) {
         case INC: tape.inc(op.v); break;
         case MOVE: tape.move(op.v); break;
         case LOOP: while (tape.get() > 0) _run(op.v, tape); break;
-        case INPUT: tape.set(); break;
+        case INPUT:
+          //tape.set(getc());
+          /*
+          TODO: fix the line above ^^^, as it currently blows up with this:
+          Successfully tagged docker_tapelang-alphabet_javascript-node10.5.0:latest
+              docker run --rm docker_tapelang-alphabet_javascript-node10.5.0
+              stty: when specifying an output style, modes may not be set
+          stty: standard input: Inappropriate ioctl for device
+          /app/node_modules/readline-sync/lib/readline-sync.js:250
+              if (res.error) { throw res.error; }
+                              ^
+
+          Error: The current environment doesn't support interactive reading from TTY.
+          stty: when specifying an output style, modes may not be set
+          stty: standard input: Inappropriate ioctl for device
+              at readlineExt (/app/node_modules/readline-sync/lib/readline-sync.js:212:19)
+              at tryExt (/app/node_modules/readline-sync/lib/readline-sync.js:249:15)
+              at /app/node_modules/readline-sync/lib/readline-sync.js:352:15
+              at _readlineSync (/app/node_modules/readline-sync/lib/readline-sync.js:422:5)
+              at Object.exports.keyIn (/app/node_modules/readline-sync/lib/readline-sync.js:877:17)
+              at getc (/app/run.js:6:23)
+              at _run (/app/run.js:77:30)
+              at _run (/app/run.js:76:43)
+              at Brainfuck.me.run (/app/run.js:84:5)
+              at Object.<anonymous> (/app/run.js:90:11)
+          Command exited with non-zero status 1
+          */
+
+          break;
         case PRINT: process.stdout.write(String.fromCharCode(tape.get())); break;
       }
     }

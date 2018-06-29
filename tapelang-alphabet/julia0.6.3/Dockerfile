@@ -1,6 +1,6 @@
-FROM node:10.5.0
+FROM julia:0.6.3
 
-RUN apt-get update && apt-get install -y time
+RUN apt-get update && apt-get install time
 
 WORKDIR /app
 
@@ -8,8 +8,6 @@ WORKDIR /app
 # and the context directory is being specified as the benchmarks/ root directory
 COPY time.sh .
 COPY tapelang-alphabet/benchmark.tape .
-COPY tapelang-alphabet/javascript-node10.5.0/run.js .
+COPY tapelang-alphabet/julia0.6.3/run.jl .
 
-RUN npm install readline-sync
-
-CMD ["./time.sh", "node", "run.js", "benchmark.tape"]
+CMD ["./time.sh", "julia", "run.jl", "benchmark.tape"]

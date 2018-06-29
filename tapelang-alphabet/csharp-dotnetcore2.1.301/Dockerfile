@@ -1,4 +1,4 @@
-FROM node:10.5.0
+FROM microsoft/dotnet:2.1.301-sdk
 
 RUN apt-get update && apt-get install -y time
 
@@ -8,8 +8,9 @@ WORKDIR /app
 # and the context directory is being specified as the benchmarks/ root directory
 COPY time.sh .
 COPY tapelang-alphabet/benchmark.tape .
-COPY tapelang-alphabet/javascript-node10.5.0/run.js .
+COPY tapelang-alphabet/csharp-dotnetcore2.1.301/*.cs .
+COPY tapelang-alphabet/csharp-dotnetcore2.1.301/*.csproj .
 
-RUN npm install readline-sync
+RUN dotnet build -c Release
 
-CMD ["./time.sh", "node", "run.js", "benchmark.tape"]
+CMD ["./time.sh", "dotnet", "bin/Release/netcoreapp2.1/tapelang.dll", "benchmark.tape"]
