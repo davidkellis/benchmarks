@@ -48,39 +48,59 @@ def main
         # 1. build docker image
         cmd = "docker build -t #{docker_container_name} -f #{language_directory}/Dockerfile ."
         puts "    #{cmd}" if verbose
-        program_output = `#{cmd}`
-        puts "    #{program_output}" if verbose
+        program_output, process_status = Open3.capture2e(cmd)    # stdout and stderr are merged into the first return value
+        build_succeeded = process_status.success?
+        build_failed = !build_succeeded
+        puts "    build failed" if build_failed
+        puts "    #{program_output}" if verbose || build_failed
 
-        # 2. run docker container
-        cmd = "docker run --rm #{docker_container_name}"
-        puts "    #{cmd}" if verbose
-        program_output, status = Open3.capture2e(cmd)    # stdout and stderr are merged into the first return value
-        puts "    #{program_output}" if verbose
+        if build_succeeded
+          # 2. run docker container
+          cmd = "docker run --rm #{docker_container_name}"
+          puts "    #{cmd}" if verbose
+          program_output, process_status = Open3.capture2e(cmd)    # stdout and stderr are merged into the first return value
+          run_failed = !process_status.success?
+          puts "    run failed" if run_failed
+          puts "    #{program_output}" if verbose || run_failed
 
-        # 3. pull metrics out of program output, as well as GNU time
-        metrics_kv_pairs = program_output.lines.map(&:strip).reduce({}) do |metrics, line|
-          if line.start_with?("#{benchmark_output_prefix}", "benchmark_process_metrics")
-            if line.start_with?("benchmark_process_metrics")
-              # GNU time is being executed like this:
-              # env time --format="benchmark_process_metrics: user=%U sys=%S real=%E percent_cpu=%P max_rss_kb=%M" "$@"
-              # so we need to pull the values out of that format string
-              match = /^benchmark_process_metrics: user=(.*) sys=(.*) real=(.*) percent_cpu=(.*) max_rss_kb=(.*)$/.match(line)
-              user_time, system_time, real_time, percent_cpu, max_rss_kb, avg_rss_kb, avg_total_mem_kb = match.captures
-              metrics["#{benchmark_output_prefix}:process_user_time"] = user_time
-              metrics["#{benchmark_output_prefix}:process_system_time"] = system_time
-              metrics["#{benchmark_output_prefix}:process_real_time"] = real_time
-              metrics["#{benchmark_output_prefix}:process_percent_cpu_time"] = percent_cpu
-              metrics["#{benchmark_output_prefix}:process_max_rss_mb"] = max_rss_kb.to_f / 1024.0
-              # metrics["#{benchmark_output_prefix}:process_avg_rss_mb"] = avg_rss_kb.to_f / 1024.0
-              # metrics["#{benchmark_output_prefix}:process_avg_total_mem_mb"] = avg_total_mem_kb.to_f / 1024.0
-            else
-              metric_name, metric_value = line.split("=").map(&:strip)
-              metrics[metric_name] = metric_value
+          # 3. pull metrics out of program output, as well as GNU time
+          metrics_kv_pairs = program_output.lines.map(&:strip).reduce({}) do |metrics, line|
+            if line.start_with?("#{benchmark_output_prefix}", "benchmark_process_metrics")
+              if line.start_with?("benchmark_process_metrics")
+                # GNU time is being executed like this:
+                # env time --format="benchmark_process_metrics: user=%U sys=%S real=%E percent_cpu=%P max_rss_kb=%M" "$@"
+                # so we need to pull the values out of that format string
+                match = /^benchmark_process_metrics: user=(.*) sys=(.*) real=(.*) percent_cpu=(.*) max_rss_kb=(.*)$/.match(line)
+                user_time, system_time, real_time, percent_cpu, max_rss_kb, avg_rss_kb, avg_total_mem_kb = match.captures
+                metrics["#{benchmark_output_prefix}:process_user_time"] = user_time
+                metrics["#{benchmark_output_prefix}:process_system_time"] = system_time
+                metrics["#{benchmark_output_prefix}:process_real_time"] = real_time
+                metrics["#{benchmark_output_prefix}:process_percent_cpu_time"] = percent_cpu
+                metrics["#{benchmark_output_prefix}:process_max_rss_mb"] = max_rss_kb.to_f / 1024.0
+                # metrics["#{benchmark_output_prefix}:process_avg_rss_mb"] = avg_rss_kb.to_f / 1024.0
+                # metrics["#{benchmark_output_prefix}:process_avg_total_mem_mb"] = avg_total_mem_kb.to_f / 1024.0
+              else
+                metric_name, metric_value = line.split("=").map(&:strip)
+                metrics[metric_name] = metric_value
+              end
             end
+            metrics
           end
-          metrics
+
+          all_metrics.merge!(metrics_kv_pairs)
         end
-        all_metrics.merge!(metrics_kv_pairs)
+
+        if build_failed || run_failed
+          error_status = (build_failed && "build error") || (run_failed && "runtime error")
+          # if we arrive here, then the benchmark program either failed to build or failed to run
+          all_metrics["#{benchmark_output_prefix}:process_user_time"] = error_status
+          all_metrics["#{benchmark_output_prefix}:process_system_time"] = error_status
+          all_metrics["#{benchmark_output_prefix}:process_real_time"] = error_status
+          all_metrics["#{benchmark_output_prefix}:process_percent_cpu_time"] = error_status
+          all_metrics["#{benchmark_output_prefix}:process_max_rss_mb"] = error_status
+          # all_metrics["#{benchmark_output_prefix}:process_avg_rss_mb"] = error_status
+          # all_metrics["#{benchmark_output_prefix}:process_avg_total_mem_mb"] = error_status
+        end
       end
     end
 

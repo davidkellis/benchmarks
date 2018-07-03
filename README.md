@@ -6,15 +6,6 @@ A sample benchmark report run on a MacBook Pro (Retina, 13-inch, Early 2015, 2.7
 
 Every benchmark implementation runs in a self-contained Docker container. Necessary build and runtime artifacts are copied into the container.
 
-Benchmarks are pulled from:
-- https://benchmarksgame-team.pages.debian.net/benchmarksgame/
-- https://github.com/kostya/benchmarks
-- https://github.com/kostya/crystal-benchmarks-game
-- https://github.com/attractivechaos/plb
-- https://github.com/drujensen/fib
-- https://github.com/trizen/language-benchmarks
-- https://github.com/JuliaLang/Microbenchmarks
-
 
 ## How to run all benchmarks
 
@@ -26,15 +17,70 @@ Benchmarks are pulled from:
 6. Open `./index.html` in a web browser to view the results.
 
 
+## Benchmark Suite
+
+Many benchmark ideas and implementations are taken from:
+- https://benchmarksgame-team.pages.debian.net/benchmarksgame/
+- https://github.com/kostya/benchmarks
+- https://github.com/kostya/crystal-benchmarks-game
+- https://github.com/attractivechaos/plb
+- https://github.com/drujensen/fib
+- https://github.com/trizen/language-benchmarks
+- https://github.com/JuliaLang/Microbenchmarks
+
+Attribution is captured in each benchmark program implementation.
+
+
+### [base64](base64/README.md)
+
+The base64 benchmark (1) constructs a string consisting of 10,000,000 'a' characters, (2) base64 encodes the string 100 times, (3) base64 decodes the encoded string 100 times, and then (4) compares the unencoded string generated in step (1) with the decoded string in step (3) and prints whether they match or not.
+
+### [binarytrees](binarytrees/README.md)
+
+The binarytrees benchmark constructs [perfect binary trees](https://en.wikipedia.org/wiki/Binary_tree#Types_of_binary_trees) of various heights in an attempt to exercise memory allocation and deallocation performance.
+
+### [fib](fib/README.md)
+
+The fib benchmark calculates and prints the 45th Fibonacci number, 1,134,903,170.
+
+### [json](json/README.md)
+
+The json benchmark reads a json document from disk, parses the json document, extracts 3-dimensional coordinates from the in-memory json document, calculates the arithmetic average of the coordinates, and then prints the averages to STDOUT.
+
+### [matrixmultiply](matrixmultiply/README.md)
+
+The matrixmultiply benchmark calculates the product of two 1000x1000 element matrices using the standard iterative matrix multiplication algorithm described at https://en.wikipedia.org/wiki/Matrix_multiplication_algorithm#Iterative_algorithm.
+
+### matrixmultiply-fast
+
+The matrixmultiply-fast benchmark is identical to the matrixmultiply benchmark, with the exception that optimized matrix multiplication libraries and optimized matrix multiplication algorithms may be used in place of the naively implemented standard iterative algorithm that is mandated in the matrixmultiply benchmark.
+
+### [pidigits](pidigits/README.md)
+
+The pidigits benchmark uses aribitrary precision arithmetic to implement the step-by-step "spigot" algorithm described in http://web.comlab.ox.ac.uk/oucl/work/jeremy.gibbons/publications/spigot.pdf to generate the first 10,000 digits of Pi.
+
+### quicksort
+
+The quicksort benchmark reads a comma-delimited list of double precision floating point values from a text file on disk into memory, and then sorts the list of floating point values in ascending order using the [Quicksort](https://en.wikipedia.org/wiki/Quicksort) sorting algorithm.
+
+### sudoku
+
+The sudoku benchmark reads a puzzle file consisting of 20 sudoku puzzles from disk, solves them sequentially, and then prints out the solved puzzles.
+
+### tapelang-alphabet
+
+The tapelang-alphabet benchmark tests how quickly a [Tapelang](https://github.com/davidkellis/tapelang) interpreter can execute a Tapelang program that prints the alphabet in reverse order, from Z to A.
+
+
 ## How to add benchmarks
 
 Every directory in the top level project directory corresponds to a benchmark suite. For example:
 ```
 benchmarks
 - base64
-- helloworld
 - json
 - pidigits
+- ...
 ```
 
 Within the directory for a given benchmark suite, there are five things: (1) benchmark implementation directories, (2) a README.md that defines the benchmark specification, including any relevant rules/guidelines for implementing the benchmark, (3) an optional setup.rb script, (4) an optional teardown.rb script, and (5) any extra artifacts that are necessary for the benchmark suite to be executed.

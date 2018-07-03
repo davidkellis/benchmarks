@@ -8,6 +8,6 @@ WORKDIR /app
 # and the context directory is being specified as the benchmarks/ root directory
 COPY time.sh .
 COPY tapelang-alphabet/benchmark.tape .
-COPY tapelang-alphabet/python3.6.5/run.rb .
+COPY tapelang-alphabet/python3.6.5/run.py .
 
 CMD ["./time.sh", "python", "run.py", "benchmark.tape"]

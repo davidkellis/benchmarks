@@ -7,7 +7,7 @@ WORKDIR /go/src/app
 # keep in mind that the docker build command is being run from the benchmarks/ project's root directory
 # and the context directory is being specified as the benchmarks/ root directory
 COPY time.sh .
-COPY matrixmultiply-blas/go1.10.3gonum/*.go .
+COPY matrixmultiply-fast/go1.10.3gonum/*.go .
 
 RUN go get -u gonum.org/v1/gonum/...
 

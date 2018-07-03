@@ -1,6 +1,6 @@
 # json Benchmark
 
-This benchmark calculates the arithmetic average of a set of 3-dimensional coordinates stored in a json document read from disk.
+This benchmark calculates the arithmetic average of a set of 3-dimensional coordinates stored in a json document that is read from disk.
 
 ### Implementation
 
