@@ -51,9 +51,6 @@ fun main(args: Array<String>) {
         if (args.size >= 1) { Integer.parseInt(args[0]) / 2 * 2 }
         else { 25 }
 
-    val t = matmul(matgen(500), matgen(500))
-    println("warmup: ${t[1][1]}")
-
     val start_time = System.currentTimeMillis()
     val a = matgen(n)
     val b = matgen(n)

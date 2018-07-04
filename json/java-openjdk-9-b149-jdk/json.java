@@ -28,9 +28,6 @@ public class json {
 	}
 
 	public static void main(String[] args) throws IOException {
-		// warming
-		// for(int i = 0; i < 5; i++) {
-			parse("sample.json");
-		// }
+		parse("sample.json");
 	}
 }

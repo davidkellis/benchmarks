@@ -48,9 +48,6 @@ function test()
     n = parse(Int, ARGS[1])
   end
 
-  # println(STDERR, "warming")
-  # main(200)
-
   # println(STDERR, "bench")
   # x = @timed main(n)
   # println(STDERR, "Elapsed: $(x[2]), Allocated: $(x[3]), GC Time: $(x[4])")

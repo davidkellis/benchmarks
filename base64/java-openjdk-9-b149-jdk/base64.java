@@ -22,11 +22,6 @@ class base64 {
 		String str2 = "";
 		String str3;
 
-		// // cheat - JIT warming-up - 0,5-1sec
-		// for (int i = 0; i < TRIES; i++) {
-		// 	enc.encodeToString(str.getBytes(ISO_8859_1)).length();
-		// }
-
 		int s = 0;
 		Long t = System.nanoTime();
 		for (int i = 0; i < TRIES; i++) {
@@ -34,11 +29,6 @@ class base64 {
 			s += str2.length();
 		}
 		out.println("encode: " + s + ", " + (System.nanoTime() - t) / 1e9);
-
-		// // cheat - JIT warming-up - 0-0,3sec
-		// for (int i = 0; i < TRIES; i++) {
-		// 	dec.decode(str2.getBytes(ISO_8859_1));
-		// }
 
 		s = 0;
 		t = System.nanoTime();
