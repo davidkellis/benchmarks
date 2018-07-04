@@ -1,32 +1,31 @@
 # base64 Benchmark
 
-This benchmark (1) constructs a string consisting of 10,000,000 'a' characters, (2) base64 encodes the string 100 times, (3) base64 decodes the encoded string 100 times, and then (4) compares the unencoded string generated in step (1) with the decoded string in step (3) and prints whether they match or not.
+This benchmark (1) constructs a string consisting of 1,000,000 'a' characters, and prints the md5 sum of the string to standard out (STDOUT), (2) repeatedly base64 encodes the string 20 times, re-encoding the previously encoded string each time, and prints the md5 sum of the 20x encoded string string to STDOUT, and then (3) repeatedly base64 decodes the encoded string 20 times, and prints the md5 sum of the decoded string to STDOUT.
 
 ### Implementation
 
 An implementation of this benchmark should be defined as in the following pseudocode function definition:
 
 ```
-SIZE = 10000000
 function base64_benchmark() {
-  raw_string = repeat("a", SIZE)    # assume this produces a string with 10,000,000 'a' characters in it, back to back.
-  encoded_string = ""
-  decoded_string = ""
+  str = repeat("a", 1000000)    # assume this produces a string with 1,000,000 'a' characters in it, back to back.
+  println(md5(str))
 
-  for i from 1 to 100 {
-    encoded_string = base64_encode(raw_string)
+  for i from 1 to 20 {
+    str = base64_encode(str)
   }
+  println(md5(str))
 
-  for i from 1 to 100 {
-    decoded_string = base64_decode(encoded_string)
+  for i from 1 to 20 {
+    str = base64_decode(str)
   }
-
-  if raw_string == decoded_string
-    puts "match"
-  else
-    puts "no match"
-  end
+  println(md5(str))
 }
 ```
 
-The program should print a single line of output to standard out (STDOUT), consisting of either the string "match" or "no match". If the program prints "no match", then the implementation is deemed incorrect and should be corrected. The line of output should be terminated with a newline.
+The program should output the following 3 lines of output to standard out (STDOUT):
+7707d6ae4e027c70eea2a935c2296f21
+82636e8ed2066ac036e6a3aacaf2e94d
+7707d6ae4e027c70eea2a935c2296f21
+
+If the program's output doesn't include those 3 lines, then the implementation is deemed incorrect and excluded from the results page. Each line of output should be terminated with a newline.

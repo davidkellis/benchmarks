@@ -1,22 +1,19 @@
 require "base64"
+require "digest"
 
-STR_SIZE = 10_000_000
-TRIES    =        100
+STR_SIZE = 1_000_000
+TRIES    =        20
 
 str = "a" * STR_SIZE
 str2 = ""
+puts Digest::MD5.hexdigest(str)
 
-print "encode: "
-t, s = Time.now, 0
 TRIES.times do |i|
-  str2 = Base64.strict_encode(str)
-  s += str2.bytesize
+  str = Base64.strict_encode(str)
 end
-puts "#{s}, #{Time.now - t}"
+puts Digest::MD5.hexdigest(str)
 
-print "decode: "
-t, s = Time.now, 0
 TRIES.times do |i|
-  s += Base64.decode(str2).bytesize
+  str = Base64.decode(str)
 end
-puts "#{s}, #{Time.now - t}"
+puts Digest::MD5.hexdigest(str)
