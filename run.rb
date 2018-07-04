@@ -71,47 +71,60 @@ def main
           puts "    run failed" if run_failed
           puts "    #{program_output}" if verbose || run_failed
 
-          # 3. pull metrics out of program output, as well as GNU time
-          metrics_kv_pairs = program_output.lines.map(&:strip).reduce({}) do |metrics, line|
-            if line.start_with?("#{benchmark_output_prefix}", "benchmark_process_metrics")
-              if line.start_with?("benchmark_process_metrics")
-                # GNU time is being executed like this:
-                # `env time --format="benchmark_process_metrics: user=%U sys=%S real=%E percent_cpu=%P max_rss_kb=%M" "$@"`
-                # so we need to pull the values out of that format string
-                match = /^benchmark_process_metrics: user=(.*) sys=(.*) real=(.*) percent_cpu=(.*) max_rss_kb=(.*)$/.match(line)
-                user_time, system_time, real_time, percent_cpu, max_rss_kb, avg_rss_kb, avg_total_mem_kb = match.captures
-
-                real_time_components = /^(.*:)?(.*):(.*)$/.match(real_time)   # the seconds component may be represented as a floating point number out to 2 or 3 decimal places
-                real_time_hours, real_time_minutes, real_time_seconds = real_time_components.captures
-                real_time_in_seconds = real_time_hours.to_f * 3600 + real_time_minutes.to_f * 60 + real_time_seconds.to_f
-                # real_time_observations_in_seconds << real_time_in_seconds
-
-                percent_cpu_as_int = percent_cpu.delete_suffix("%").to_i
-
-                max_rss_mb = max_rss_kb.to_f / 1024.0
-                # max_memory_observations_in_mb << max_rss_mb
-
-                # metrics["#{benchmark_output_prefix}:process_user_time"] = user_time
-                # metrics["#{benchmark_output_prefix}:process_system_time"] = system_time
-                # metrics["#{benchmark_output_prefix}:process_real_time"] = real_time
-                metrics["#{benchmark_output_prefix}:process_real_time_secs"] = real_time_in_seconds
-                metrics["#{benchmark_output_prefix}:process_percent_cpu_time"] = percent_cpu_as_int
-                metrics["#{benchmark_output_prefix}:process_max_rss_mb"] = max_rss_mb
-                # metrics["#{benchmark_output_prefix}:process_avg_rss_mb"] = avg_rss_kb.to_f / 1024.0
-                # metrics["#{benchmark_output_prefix}:process_avg_total_mem_mb"] = avg_total_mem_kb.to_f / 1024.0
-              else
-                metric_name, metric_value = line.split("=").map(&:strip)
-                metrics[metric_name] = metric_value
-              end
-            end
-            metrics
+          # 3. verify benchmark printed the correct solution
+          verify_script = File.join(benchmark_directory, "verify.rb")
+          verify_succeeded = true
+          if File.exists?(verify_script)
+            cmd = "ruby #{verify_script}"
+            puts "    #{cmd}" if verbose
+            verify_output, verify_status = Open3.capture2e(cmd, stdin_data: program_output)
+            verify_succeeded = verify_status.success?
           end
+          puts "    #{ verify_succeeded ? "solution accepted" : "solution rejected" }" if verbose
+          verify_failed = !verify_succeeded
 
-          all_metrics.merge!(metrics_kv_pairs)
+          # 4. pull metrics out of program output, as well as GNU time
+          if verify_succeeded
+            metrics_kv_pairs = program_output.lines.map(&:strip).reduce({}) do |metrics, line|
+              if line.start_with?("#{benchmark_output_prefix}", "benchmark_process_metrics")
+                if line.start_with?("benchmark_process_metrics")
+                  # GNU time is being executed like this:
+                  # `env time --format="benchmark_process_metrics: user=%U sys=%S real=%E percent_cpu=%P max_rss_kb=%M" "$@"`
+                  # so we need to pull the values out of that format string
+                  match = /^benchmark_process_metrics: user=(.*) sys=(.*) real=(.*) percent_cpu=(.*) max_rss_kb=(.*)$/.match(line)
+                  user_time, system_time, real_time, percent_cpu, max_rss_kb, avg_rss_kb, avg_total_mem_kb = match.captures
+
+                  real_time_components = /^(.*:)?(.*):(.*)$/.match(real_time)   # the seconds component may be represented as a floating point number out to 2 or 3 decimal places
+                  real_time_hours, real_time_minutes, real_time_seconds = real_time_components.captures
+                  real_time_in_seconds = real_time_hours.to_f * 3600 + real_time_minutes.to_f * 60 + real_time_seconds.to_f
+                  # real_time_observations_in_seconds << real_time_in_seconds
+
+                  percent_cpu_as_int = percent_cpu.delete_suffix("%").to_i
+
+                  max_rss_mb = max_rss_kb.to_f / 1024.0
+                  # max_memory_observations_in_mb << max_rss_mb
+
+                  # metrics["#{benchmark_output_prefix}:process_user_time"] = user_time
+                  # metrics["#{benchmark_output_prefix}:process_system_time"] = system_time
+                  # metrics["#{benchmark_output_prefix}:process_real_time"] = real_time
+                  metrics["#{benchmark_output_prefix}:process_real_time_secs"] = real_time_in_seconds
+                  metrics["#{benchmark_output_prefix}:process_percent_cpu_time"] = percent_cpu_as_int
+                  metrics["#{benchmark_output_prefix}:process_max_rss_mb"] = max_rss_mb
+                  # metrics["#{benchmark_output_prefix}:process_avg_rss_mb"] = avg_rss_kb.to_f / 1024.0
+                  # metrics["#{benchmark_output_prefix}:process_avg_total_mem_mb"] = avg_total_mem_kb.to_f / 1024.0
+                else
+                  metric_name, metric_value = line.split("=").map(&:strip)
+                  metrics[metric_name] = metric_value
+                end
+              end
+              metrics
+            end
+            all_metrics.merge!(metrics_kv_pairs)
+          end
         end
 
-        if build_failed || run_failed
-          error_status = (build_failed && "build error") || (run_failed && "runtime error")
+        if build_failed || run_failed || verify_failed
+          error_status = (build_failed && "build error") || (run_failed && "runtime error") || (verify_failed && "verify error")
           # if we arrive here, then the benchmark program either failed to build or failed to run
           # all_metrics["#{benchmark_output_prefix}:process_user_time"] = error_status
           # all_metrics["#{benchmark_output_prefix}:process_system_time"] = error_status
@@ -177,6 +190,7 @@ end
 def augment_metrics_with_normalized_metrics!(metrics)
   metrics_tuples = metrics.map {|k, v| k.split(":") << v }
   metrics_tuples.select! {|tuple| ["process_real_time_secs", "process_max_rss_mb"].include?(tuple[2]) }
+  metrics_tuples.reject! {|tuple| tuple.last =~ /error/ }
   metrics_tuples_by_benchmark_and_metric_name = metrics_tuples.group_by{|tuple| [tuple[0], tuple[2]] }
 
   metrics_tuples_by_benchmark_and_metric_name.each do |benchmark_and_metric_name_pair, tuples|
