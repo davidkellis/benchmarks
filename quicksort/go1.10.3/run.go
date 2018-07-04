@@ -3,7 +3,7 @@
 package main
 
 import (
-	"fmt"
+	// "fmt"
 	"io/ioutil"
 	"math/rand"
 	"sort"
