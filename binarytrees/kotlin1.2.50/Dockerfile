@@ -13,8 +13,8 @@ WORKDIR /app
 # keep in mind that the docker build command is being run from the benchmarks/ project's root directory
 # and the context directory is being specified as the benchmarks/ root directory
 COPY time.sh .
-COPY base64/kotlin1.2.50/*.kt .
+COPY binarytrees/kotlin1.2.50/*.kt .
 
-RUN kotlinc base64.kt -include-runtime -d run.jar
+RUN kotlinc binarytrees.kt -include-runtime -d run.jar
 
-CMD ["./time.sh", "kotlin", "-J-Xmx3G", "-cp", "run.jar", "Base64Kt"]
+CMD ["./time.sh", "kotlin", "-cp", "run.jar", "binarytrees", "21"]

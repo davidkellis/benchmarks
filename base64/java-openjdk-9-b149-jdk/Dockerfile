@@ -11,4 +11,4 @@ COPY base64/java-openjdk-9-b149-jdk/*.java .
 
 RUN javac base64.java
 
-CMD ["./time.sh", "java", "base64"]
+CMD ["./time.sh", "java", "-Xmx3G", "base64"]

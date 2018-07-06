@@ -10,5 +10,6 @@ COPY time.sh .
 COPY base64/julia0.6.3/run.jl .
 
 RUN julia -e 'Pkg.add("Codecs")'
+RUN julia -e 'Pkg.add("MD5")'
 
 CMD ["./time.sh", "julia", "run.jl"]

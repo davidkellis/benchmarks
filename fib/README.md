@@ -4,7 +4,7 @@ This benchmark calculates the 45th Fibonacci number: `fib(45) = 1,134,903,170`.
 
 The nth Fibonacci number is defined by the following equation:
 `fib(n) = fib(n - 1) + fib(n - 2)`
-such that `n >= 1`, and `fib(1) = fib(2) = 1`.
+such that `n >= 1`, and `fib(1)` and `fib(2)` are defined to be 1.
 
 The Fibonacci sequence starts out as:
 
@@ -25,7 +25,7 @@ An implementation of this benchmark should be defined as in the following pseudo
 
 ```
 function fib(n) {
-  if n <= 1
+  if n <= 2
     return 1
   else
     return fib(n - 1) + fib(n - 2)

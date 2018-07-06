@@ -3,7 +3,7 @@
 package main
 
 import (
-	// "fmt"
+	"fmt"
 	"io/ioutil"
 	"math/rand"
 	"sort"
@@ -13,30 +13,30 @@ import (
 
 func partition(a sort.Interface, first int, last int, pivotIndex int) int {
 	a.Swap(first, pivotIndex) // move it to beginning
-	left := first+1
+	left := first + 1
 	right := last
 	for left <= right {
-			for left <= last && a.Less(left, first) {
-					left++
-			}
-			for right >= first && a.Less(first, right) {
-					right--
-			}
-			if left <= right {
-					a.Swap(left, right)
-					left++
-					right--
-			}
+		for left <= last && a.Less(left, first) {
+			left++
+		}
+		for right >= first && a.Less(first, right) {
+			right--
+		}
+		if left <= right {
+			a.Swap(left, right)
+			left++
+			right--
+		}
 	}
 	a.Swap(first, right) // swap into right place
-	return right    
+	return right
 }
 
 func quicksortHelper(a sort.Interface, first int, last int) {
 	if first >= last {
-			return
+		return
 	}
-	pivotIndex := partition(a, first, last, rand.Intn(last - first + 1) + first)
+	pivotIndex := partition(a, first, last, rand.Intn(last-first+1)+first)
 	quicksortHelper(a, first, pivotIndex-1)
 	quicksortHelper(a, pivotIndex+1, last)
 }
@@ -51,16 +51,21 @@ func main() {
 		panic(err)
 	}
 
-	str := string(b)
+	str := strings.TrimSpace(string(b))
 	numbers := strings.Split(str, ",")
-	floats := []float64{}
+	ints := []int{}
 	for _, n := range numbers {
-		f, _ := strconv.ParseFloat(n, 64)
-		floats = append(floats, f)
+		i, _ := strconv.ParseInt(n, 10, 32)
+		ints = append(ints, int(i))
 	}
 
-	floatSlice := sort.Float64Slice(floats)
-	quicksort(floatSlice)
+	intSlice := sort.IntSlice(ints)
+	quicksort(intSlice)
 
-	// fmt.Printf("%v\n", floatSlice)
+	for i := 0; i < 10; i++ {
+		fmt.Printf("%v\n", intSlice[i])
+	}
+	for i := len(intSlice) - 10; i < len(intSlice); i++ {
+		fmt.Printf("%v\n", intSlice[i])
+	}
 }

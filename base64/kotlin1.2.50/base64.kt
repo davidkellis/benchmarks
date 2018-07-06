@@ -1,34 +1,34 @@
 // Taken from https://github.com/kostya/benchmarks/blob/master/base64/Test.kt
 
 import java.util.Base64
+import java.security.MessageDigest
 
-val STR_SIZE = 10000000
-val TRIES = 100
+val STR_SIZE = 1000000
+val TRIES = 20
 
 val enc = Base64.getEncoder();
 val dec = Base64.getDecoder();
 
 fun main(args: Array<String>) {
-    val str = "a".repeat(STR_SIZE)
+    var str = "a".repeat(STR_SIZE)
 
-    var count1 = 0
-    var encStr = ""
+    var md = MessageDigest.getInstance("MD5")
+    var digest = md.digest(str.toByteArray())
+    for (byte in digest) print("%02x".format(byte))
+    println();
 
-    val t1 = System.nanoTime()
     repeat(TRIES) {
-        encStr = enc.encodeToString(str.toByteArray())
-        count1 += encStr.length
+        str = enc.encodeToString(str.toByteArray())
     }
-    println("encode: ${count1}, ${(System.nanoTime() - t1) / 1e9}")
+    digest = md.digest(str.toByteArray())
+    for (byte in digest) print("%02x".format(byte))
+    println();
 
-    var count2 = 0
-    var decStr: String
-
-    val t2 = System.nanoTime()
     repeat(TRIES) {
-        val decBytes = dec.decode(encStr)
-        decStr = String(decBytes)
-        count2 += decStr.length
+        val decBytes = dec.decode(str)
+        str = String(decBytes)
     }
-    println("decode: ${count2}, ${(System.nanoTime() - t2) / 1e9}")
+    digest = md.digest(str.toByteArray())
+    for (byte in digest) print("%02x".format(byte))
+    println();
 }

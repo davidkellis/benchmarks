@@ -2,41 +2,50 @@
 
 import java.util.Base64;
 import static java.lang.System.out;
-import static java.nio.charset.StandardCharsets.ISO_8859_1;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 class base64 {
-
-	final static int STR_SIZE = 10000000;
-	final static int TRIES = 100;
+	final static int STR_SIZE = 1000000;
+	final static int TRIES = 20;
 
 	final static Base64.Decoder dec = Base64.getDecoder();
 	final static Base64.Encoder enc = Base64.getEncoder();
 
-	public static void main(String[] args) {
+	static String hexDigest(String str, String digestName) {
+		try {
+			MessageDigest md = MessageDigest.getInstance(digestName);
+			byte[] digest = md.digest(str.getBytes(StandardCharsets.UTF_8));
+			char[] hex = new char[digest.length * 2];
+			for (int i = 0; i < digest.length; i++) {
+				hex[2 * i] = "0123456789abcdef".charAt((digest[i] & 0xf0) >> 4);
+				hex[2 * i + 1] = "0123456789abcdef".charAt(digest[i] & 0x0f);
+			}
+			return new String(hex);
+		} catch (NoSuchAlgorithmException e) {
+			throw new IllegalStateException(e);
+		}
+	}
 
+	public static void main(String[] args) {
 		StringBuilder sb = new StringBuilder("");
 		for (int i = 0; i < STR_SIZE; i++) {
 			sb.append("a");
 		}
 		String str = sb.toString();
-		String str2 = "";
-		String str3;
+		out.println(hexDigest(str, "MD5"));
 
-		int s = 0;
-		Long t = System.nanoTime();
 		for (int i = 0; i < TRIES; i++) {
-			str2 = enc.encodeToString(str.getBytes(ISO_8859_1));
-			s += str2.length();
+			str = enc.encodeToString(str.getBytes(StandardCharsets.ISO_8859_1));
 		}
-		out.println("encode: " + s + ", " + (System.nanoTime() - t) / 1e9);
+		out.println(hexDigest(str, "MD5"));
 
-		s = 0;
-		t = System.nanoTime();
 		for (int i = 0; i < TRIES; i++) {
-			byte[] b_arr = dec.decode(str2.getBytes(ISO_8859_1));
-			str3 = new String(b_arr, ISO_8859_1);
-			s += str3.length();
+			byte[] b_arr = dec.decode(str.getBytes(StandardCharsets.ISO_8859_1));
+			str = new String(b_arr, StandardCharsets.ISO_8859_1);
 		}
-		out.println("decode: " + s + ", " + (System.nanoTime() - t) / 1e9);
+		out.println(hexDigest(str, "MD5"));
 	}
 }

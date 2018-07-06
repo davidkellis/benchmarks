@@ -79,6 +79,7 @@ def main
             puts "    #{cmd}" if verbose
             verify_output, verify_status = Open3.capture2e(cmd, stdin_data: program_output)
             verify_succeeded = verify_status.success?
+            puts "    #{verify_output}" if verbose
           end
           puts "    #{ verify_succeeded ? "solution accepted" : "solution rejected" }" if verbose
           verify_failed = !verify_succeeded

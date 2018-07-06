@@ -10,7 +10,8 @@ end
 def main
   # read and parse the number listing
   numbers = File.read("numbers.txt").strip.split(",").map(&.to_i)
-  numbers.quick_sort
+  sorted = numbers.quick_sort
+  puts (sorted[0...10] + sorted[-10..-1]).join("\n")
 end
 
 main

@@ -4,6 +4,8 @@
 #include "stdio.h"
 #include "time.h"
 #include <stdint.h>
+#include <string.h>
+#include <openssl/md5.h>
 
 typedef unsigned int uint;
 const char* chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -99,38 +101,50 @@ void encode(int size, const char* str, int* out_size, char** output) {
 int main() {
   init_decode_table();
 
-  const int STR_SIZE = 10000000;
-  const int TRIES = 100;
+  const int STR_SIZE = 1000000;
+  const int TRIES = 20;
 
-  char *str = (char*) malloc(STR_SIZE + 1);
-  for (int i = 0; i < STR_SIZE; i++) { str[i] = 'a'; }
-  str[STR_SIZE] = '\0';
-
-  int s = 0;
-  clock_t t = clock();
-  for (int i = 0; i < TRIES; i++) { 
-    char *str2; 
-    int str2_size;
-    encode(STR_SIZE, str, &str2_size, &str2); 
-    s += str2_size;
-    free(str2); 
-  }
-  printf("encode: %d, %.2f\n", s, (float)(clock() - t)/CLOCKS_PER_SEC);
-
+  int i;
+  unsigned char result[MD5_DIGEST_LENGTH];
+  char *str;
+  int str_size = STR_SIZE;
   char *str2;
   int str2_size;
-  encode(STR_SIZE, str, &str2_size, &str2);
 
-  s = 0;
-  t = clock();
-  for (int i = 0; i < TRIES; i++) {
-    char *str3;
-    int str3_size;
-    if (decode(str2_size, str2, &str3_size, &str3) != 0) {
+  str = (char*) malloc(str_size + 1);
+  for (i = 0; i < STR_SIZE; i++) { str[i] = 'a'; }
+  str[STR_SIZE] = '\0';
+
+  MD5((unsigned char *)str, strlen(str), result);
+  for(i = 0; i < MD5_DIGEST_LENGTH; i++)
+    printf("%02x", result[i]);
+  printf("\n");
+
+  for (i = 0; i < TRIES; i++) { 
+    encode(str_size, str, &str2_size, &str2); 
+    free(str);
+    str = str2;
+    str_size = str2_size;
+  }
+
+  MD5((unsigned char *)str, strlen(str), result);
+  for(i = 0; i < MD5_DIGEST_LENGTH; i++)
+    printf("%02x", result[i]);
+  printf("\n");
+
+  for (i = 0; i < TRIES; i++) {
+    if (decode(str_size, str, &str2_size, &str2) != 0) {
       printf("error when decoding");
     }
-    s += str3_size;
-    free(str3);
+    free(str);
+    str = str2;
+    str_size = str2_size;
   }
-  printf("decode: %d, %.2f\n", s, (float)(clock() - t)/CLOCKS_PER_SEC);
+  
+  MD5((unsigned char *)str, strlen(str), result);
+  for(i = 0; i < MD5_DIGEST_LENGTH; i++)
+    printf("%02x", result[i]);
+  printf("\n");
+
+  free(str);
 }

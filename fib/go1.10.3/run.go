@@ -5,7 +5,7 @@ import (
 )
 
 func fib(n int32) int32 {
-	if n <= 1 {
+	if n <= 2 {
 		return 1
 	}
 

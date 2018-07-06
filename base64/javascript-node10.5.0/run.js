@@ -1,23 +1,23 @@
-var STR_SIZE = 10000000;
-var TRIES = 100;
+var MD5 = require('md5.js')
+
+var STR_SIZE = 1000000;
+var TRIES = 20;
+
+function md5(str) {
+  return new MD5().update(str).digest('hex');
+}
 
 var str = ""; for (var i = 0; i < STR_SIZE; i++) str += "a";
-var str2 = "";
+console.log(md5(str));
 
-var s = 0;
-var start = new Date();
 for (var i = 0; i < TRIES; i++) {
-  var b = new Buffer(str);
-  str2 = b.toString('base64');
-  s += str2.length;
+  var b = Buffer.from(str);
+  str = b.toString('base64');
 }
-console.log("encode: %d, %d", s, ((new Date()) - start) / 1000);
+console.log(md5(str));
 
-start = new Date();
-s = 0
 for (var i = 0; i < TRIES; i++) {
-  var b = new Buffer(str2, 'base64');
-  var str3 = b.toString();
-  s += str3.length;
+  var b = Buffer.from(str, 'base64');
+  var str = b.toString();
 }
-console.log("decode: %d, %d", s, ((new Date()) - start) / 1000);
+console.log(md5(str));

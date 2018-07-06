@@ -4,7 +4,7 @@ public class Fib
 {
     public static Int32 fib(Int32 n)
     {
-        if (n <= 1)
+        if (n <= 2)
         {
             return 1;
         }

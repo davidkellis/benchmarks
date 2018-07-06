@@ -8,6 +8,8 @@
 # Modified && Parallelised by Scott Leggett
 # *reset*
 
+M = Mutex.new
+
 module MiniParallel
     class Worker
         def initialize(read, write)
@@ -48,7 +50,7 @@ module MiniParallel
         workers.each do |worker|
             threads << Thread.new do
               loop do
-                Thread.exclusive{ index += 1 }
+                M.synchronize { index += 1 }
                 break if index >= array.size
                 results[index] = worker.work(index)
               end

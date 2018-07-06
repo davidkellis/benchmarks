@@ -9,4 +9,6 @@ WORKDIR /app
 COPY time.sh .
 COPY base64/javascript-node10.5.0/run.js .
 
-CMD ["./time.sh", "node", "run.js"]
+RUN npm install md5.js
+
+CMD ["./time.sh", "node", "--max-old-space-size=4096", "run.js"]

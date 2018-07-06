@@ -2,35 +2,38 @@
 
 package main
 
+import "crypto/md5"
 import "encoding/base64"
 import "fmt"
-import "time"
+
 import "strings"
 
 func main() {
-	StrSize := 10000000
-	TRIES := 100
+	h := md5.New()
 
-	str2 := ""
+	StrSize := 1000000
+	TRIES := 20
+
 	bytes := []byte(strings.Repeat("a", StrSize))
+	str := string(bytes)
+	h.Reset()
+	h.Write(bytes)
+	fmt.Printf("%x\n", h.Sum(nil))
 
-	coder := base64.StdEncoding
-
-	t := time.Now()
-	s := 0
+	encoder := base64.StdEncoding
 
 	for i := 0; i < TRIES; i++ {
-		str2 = coder.EncodeToString(bytes)
-		s += len(str2)
+		str = encoder.EncodeToString([]byte(str))
 	}
-	fmt.Printf("encode: %d, %.4f\n", s, time.Since(t).Seconds())
+	h.Reset()
+	h.Write([]byte(str))
+	fmt.Printf("%x\n", h.Sum(nil))
 
-	t = time.Now()
-	s = 0
-	var str3 []byte
 	for i := 0; i < TRIES; i++ {
-		str3, _ = coder.DecodeString(str2)
-		s += len(str3)
+		bytes, _ = encoder.DecodeString(str)
+		str = string(bytes)
 	}
-	fmt.Printf("decode: %d, %.4f\n", s, time.Since(t).Seconds())
+	h.Reset()
+	h.Write([]byte(str))
+	fmt.Printf("%x\n", h.Sum(nil))
 }

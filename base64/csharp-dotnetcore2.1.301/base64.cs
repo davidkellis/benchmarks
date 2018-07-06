@@ -8,33 +8,40 @@ namespace base64
 {
     class base64
     {
+        static System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create();
+
+        static string md5sum(string str)
+        {
+            byte[] bytes = md5.ComputeHash(Encoding.ASCII.GetBytes(str));
+
+            StringBuilder result = new StringBuilder(bytes.Length*2);
+
+            for (int i = 0; i < bytes.Length; i++)
+                result.Append(bytes[i].ToString("x2"));
+
+            return result.ToString();
+        }
+
         static void Main(string[] args)
         {
-            const int STR_SIZE = 10000000;
-            const int TRIES = 100;
+            
+            const int STR_SIZE = 1000000;
+            const int REPETITIONS = 20;
 
-            byte[] str1 = Encoding.ASCII.GetBytes(new String('a', STR_SIZE));
-            string str2 = String.Empty;
-            int s = 0;
+            string str = new String('a', STR_SIZE);
+            Console.WriteLine("{0}", md5sum(str));
 
-            var sw = Stopwatch.StartNew();
-            for (int i = 0; i < TRIES; i++)
+            for (int i = 0; i < REPETITIONS; i++)
             {
-                str2 = Convert.ToBase64String(str1);
-                s += str2.Length;
+                str = Convert.ToBase64String(Encoding.ASCII.GetBytes(str));
             }
+            Console.WriteLine("{0}", md5sum(str));
 
-            sw.Stop();
-            Console.WriteLine("encode: {0}, {1}", s, sw.Elapsed.TotalSeconds);
-
-            s = 0;
-            sw.Restart();
-            for (int i = 0; i < TRIES; i++)
+            for (int i = 0; i < REPETITIONS; i++)
             {
-                s += Convert.FromBase64String(str2).Length;
+                str = Encoding.ASCII.GetString(Convert.FromBase64String(str));
             }
-            sw.Stop();
-            Console.WriteLine("decode: {0}, {1}", s, sw.Elapsed.TotalSeconds);
+            Console.WriteLine("{0}", md5sum(str));
         }
     }
 }

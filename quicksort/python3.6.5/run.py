@@ -1,7 +1,10 @@
 def main():
   strings = open('./numbers.txt', 'r').read().split(",")
-  floats = list(map(float, strings))
-  print(quickSort(floats))
+  ints = list(map(int, strings))
+  sorted_ints = quickSort(ints)
+  print("\n".join(map(str, sorted_ints[:10])))
+  print("\n".join(map(str, sorted_ints[-10:])))
+
 
 def quickSort(arr):
   less = []
