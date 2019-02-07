@@ -81,8 +81,12 @@ def main
             verify_succeeded = verify_status.success?
             puts "    #{verify_output}" if verbose
           end
-          puts "    #{ verify_succeeded ? "solution accepted" : "solution rejected" }" if verbose
           verify_failed = !verify_succeeded
+          if verbose
+            puts "    #{ verify_succeeded ? "solution accepted" : "solution rejected" }"
+          else
+            puts "    solution rejected" if verify_failed
+          end
 
           # 4. pull metrics out of program output, as well as GNU time
           if verify_succeeded

@@ -27,6 +27,7 @@ Many benchmark ideas and implementations are taken from:
 - https://github.com/drujensen/fib
 - https://github.com/trizen/language-benchmarks
 - https://github.com/JuliaLang/Microbenchmarks
+- https://github.com/archer884/i-before-e
 
 Attribution is captured in each benchmark program implementation.
 
@@ -42,6 +43,11 @@ The binarytrees benchmark constructs [perfect binary trees](https://en.wikipedia
 ### [fib](fib/README.md)
 
 The fib benchmark calculates and prints the 45th Fibonacci number, 1,134,903,170.
+
+### [i-before-e](https://github.com/archer884/i-before-e)
+The i-before-e benchmark implements the r/dailyprogrammer challenge for 2018-06-11 (see https://www.reddit.com/r/dailyprogrammer/comments/8q96da/20180611_challenge_363_easy_i_before_e_except/):
+
+List the words from the enable1 word list that are exceptions to the rule.
 
 ### [json](json/README.md)
 

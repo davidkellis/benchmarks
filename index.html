@@ -20,7 +20,7 @@
 
     <script type="text/javascript">
       function renderTable() {
-        var dataSet = [["i-before-e","crystal0.25.0",0.09,52,14.17578125,1.7999999999999998,3.3385464581416744],["i-before-e","crystal0.27.2",0.13,76,14.58203125,2.6,3.434222631094756],["i-before-e","csharp-dotnetcore2.1.301",0.36,63,32.25,7.199999999999999,7.595216191352346],["i-before-e","go1.10.3",0.27,80,6.57421875,5.4,1.5482980680772769],["i-before-e","javascript-node10.15.1",0.4,47,49.93359375,8.0,11.759889604415823],["i-before-e","python3.6.5",0.37,76,10.3359375,7.3999999999999995,2.434222631094756],["i-before-e","ruby2.5.1",0.22,77,21.19140625,4.3999999999999995,4.990800367985281],["i-before-e","ruby2.6.1",0.21,85,26.0625,4.199999999999999,6.137994480220791],["i-before-e","ruby2.6.1-jit",0.26,159,34.38671875,5.2,8.098436062557498],["i-before-e","rust1.32.0",0.05,55,4.24609375,1.0,1.0]];
+        var dataSet = [["i-before-e","crystal0.25.0",0.06,44,14.2734375,1.0,3.355371900826446],["i-before-e","crystal0.27.2",0.09,65,14.65234375,1.5,3.4444444444444446],["i-before-e","csharp-dotnetcore2.1.301",0.22,98,32.45703125,3.666666666666667,7.629935720844812],["i-before-e","go1.10.3",0.2,85,6.56640625,3.3333333333333335,1.5436179981634528],["i-before-e","javascript-node10.15.1",0.28,72,50.75390625,4.666666666666667,11.931129476584022],["i-before-e","python3.6.5",0.37,89,10.3125,6.166666666666667,2.4242424242424243],["i-before-e","ruby2.5.1",0.19,92,21.30078125,3.166666666666667,5.007346189164371],["i-before-e","ruby2.6.1",0.21,91,26.2890625,3.5,6.179981634527089],["i-before-e","ruby2.6.1-jit",0.25,163,34.265625,4.166666666666667,8.055096418732782],["i-before-e","rust1.32.0",0.06,44,4.25390625,1.0,1.0]];
 
         $('#metrics').DataTable({
           paging: false,
@@ -34,7 +34,7 @@
       }
 
       function renderOverallRuntimeBoxPlot() {
-        var runtimeTraces = [{"x":[8.0],"name":"javascript-node10.15.1","type":"box","boxmean":false},{"x":[7.3999999999999995],"name":"python3.6.5","type":"box","boxmean":false},{"x":[7.199999999999999],"name":"csharp-dotnetcore2.1.301","type":"box","boxmean":false},{"x":[5.4],"name":"go1.10.3","type":"box","boxmean":false},{"x":[5.2],"name":"ruby2.6.1-jit","type":"box","boxmean":false},{"x":[4.3999999999999995],"name":"ruby2.5.1","type":"box","boxmean":false},{"x":[4.199999999999999],"name":"ruby2.6.1","type":"box","boxmean":false},{"x":[2.6],"name":"crystal0.27.2","type":"box","boxmean":false},{"x":[1.7999999999999998],"name":"crystal0.25.0","type":"box","boxmean":false},{"x":[1.0],"name":"rust1.32.0","type":"box","boxmean":false}];
+        var runtimeTraces = [{"x":[6.166666666666667],"name":"python3.6.5","type":"box","boxmean":false},{"x":[4.666666666666667],"name":"javascript-node10.15.1","type":"box","boxmean":false},{"x":[4.166666666666667],"name":"ruby2.6.1-jit","type":"box","boxmean":false},{"x":[3.666666666666667],"name":"csharp-dotnetcore2.1.301","type":"box","boxmean":false},{"x":[3.5],"name":"ruby2.6.1","type":"box","boxmean":false},{"x":[3.3333333333333335],"name":"go1.10.3","type":"box","boxmean":false},{"x":[3.166666666666667],"name":"ruby2.5.1","type":"box","boxmean":false},{"x":[1.5],"name":"crystal0.27.2","type":"box","boxmean":false},{"x":[1.0],"name":"rust1.32.0","type":"box","boxmean":false},{"x":[1.0],"name":"crystal0.25.0","type":"box","boxmean":false}];
 
         var runtimeLayout = {
           title: 'Overall Normalized Runtime',
@@ -49,7 +49,7 @@
       }
 
       function renderOverallMaxMemBoxPlot() {
-        var maxmemTraces = [{"x":[11.759889604415823],"name":"javascript-node10.15.1","type":"box","boxmean":false},{"x":[8.098436062557498],"name":"ruby2.6.1-jit","type":"box","boxmean":false},{"x":[7.595216191352346],"name":"csharp-dotnetcore2.1.301","type":"box","boxmean":false},{"x":[6.137994480220791],"name":"ruby2.6.1","type":"box","boxmean":false},{"x":[4.990800367985281],"name":"ruby2.5.1","type":"box","boxmean":false},{"x":[3.434222631094756],"name":"crystal0.27.2","type":"box","boxmean":false},{"x":[3.3385464581416744],"name":"crystal0.25.0","type":"box","boxmean":false},{"x":[2.434222631094756],"name":"python3.6.5","type":"box","boxmean":false},{"x":[1.5482980680772769],"name":"go1.10.3","type":"box","boxmean":false},{"x":[1.0],"name":"rust1.32.0","type":"box","boxmean":false}];
+        var maxmemTraces = [{"x":[11.931129476584022],"name":"javascript-node10.15.1","type":"box","boxmean":false},{"x":[8.055096418732782],"name":"ruby2.6.1-jit","type":"box","boxmean":false},{"x":[7.629935720844812],"name":"csharp-dotnetcore2.1.301","type":"box","boxmean":false},{"x":[6.179981634527089],"name":"ruby2.6.1","type":"box","boxmean":false},{"x":[5.007346189164371],"name":"ruby2.5.1","type":"box","boxmean":false},{"x":[3.4444444444444446],"name":"crystal0.27.2","type":"box","boxmean":false},{"x":[3.355371900826446],"name":"crystal0.25.0","type":"box","boxmean":false},{"x":[2.4242424242424243],"name":"python3.6.5","type":"box","boxmean":false},{"x":[1.5436179981634528],"name":"go1.10.3","type":"box","boxmean":false},{"x":[1.0],"name":"rust1.32.0","type":"box","boxmean":false}];
 
         var maxmemLayout = {
           title: 'Overall Normalized Maximum Memory',
