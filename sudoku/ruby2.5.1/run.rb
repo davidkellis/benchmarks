@@ -74,12 +74,12 @@ end
 
 mr, mc = sd_genmat()
 lines = File.readlines("./sudoku.txt")
-50.times do
+# 50.times do
   lines.each do |line|
     if line.length >= 81
       ret = sd_solve(mr, mc, line)
       ret.each {|s| puts s.join }
       puts
     end
-  end
+  # end
 end
