@@ -112,11 +112,10 @@ class sudoku_v1 {
 
 		sudoku_v1 a = new sudoku_v1();
 		a.genmat();
-		for (int i = 0; i < 50; i++) {
+		for (int i = 0; i < 10; i++) {
 			for (String line : lines) {
 				if (line.length() >= 81) {
 					a.solve(line);
-					System.out.println();
 				}
 			}
 		}

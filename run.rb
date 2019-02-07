@@ -26,7 +26,10 @@ def main
 
   benchmark_directories = Dir.glob('*').select { |f| File.directory?(f) }
   benchmark_directories.each do |benchmark_directory|
-    next unless desired_benchmarks.empty? || desired_benchmarks.any? {|benchmark_path| benchmark_path.start_with?(benchmark_directory) }
+    this_is_desired_benchmark = desired_benchmarks.empty? || 
+                                desired_benchmarks.any? {|benchmark_path| benchmark_path.start_with?(benchmark_directory) }
+    next unless this_is_desired_benchmark
+    next if File.exists?(File.join(benchmark_directory, "ignore"))
 
     puts "Running #{benchmark_directory} benchmark"
     benchmark_all_languages_t1 = Time.now
@@ -43,7 +46,11 @@ def main
 
     language_directories = Dir.glob("#{benchmark_directory}/*").select { |f| File.directory?(f) }
     language_directories.each do |language_directory|
-      next unless desired_benchmarks.empty? || desired_benchmarks.any? {|benchmark_path| benchmark_path.start_with?(language_directory) || language_directory.start_with?(benchmark_path) }
+      this_is_a_desired_language = desired_benchmarks.empty? || 
+                                   desired_benchmarks.any? {|benchmark_path| benchmark_path.start_with?(language_directory) || 
+                                                                             language_directory.start_with?(benchmark_path) }
+      next unless this_is_a_desired_language
+      next if File.exists?(File.join(language_directory, "ignore"))
 
       benchmark_name, language_name = *File.split(language_directory)
       docker_container_name = ["docker", benchmark_name, language_name].join("_")

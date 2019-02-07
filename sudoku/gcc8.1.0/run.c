@@ -200,11 +200,10 @@ int main(void) {
   lineCount = i;
 
   sdaux_t *a = sd_genmat();
-  for(i = 0; i < 50; ++i) {
+  for(i = 0; i < 10; ++i) {
     for(l = 0; l < lineCount; ++l) {
       if (strlen(line[l]) < 81) continue;
       sd_solve(a, line[l]);
-      putchar('\n');
     }
   }
   free(a);

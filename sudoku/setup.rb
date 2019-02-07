@@ -1,6 +1,6 @@
 def sd_genmat()
-	mr = Array(Array(Int32)).new(324) { [] of Int32 }
-	mc = Array(Array(Int32)).new(729) { [] of Int32 }
+	mr = Array.new(324) { [] }
+	mc = Array.new(729) { [] }
 	r = 0
 	(0...729).each do |n|
 		mc[n] = [n/9, n/81*9 + n%9 + 81, n%81 + 162, n%9*9 + n/243*3 + n/27%3 + 243]
@@ -16,15 +16,15 @@ end
 def sd_update(mr, mc, sr, sc, r, v)
 	m = 10
 	m_c = 0
-	mc[r].each do |c|
+	for c in mc[r]
 		sc[c] += v << 7
 	end
-	mc[r].each do |c|
+	for c in mc[r]
 		if v > 0
-			mr[c].each do |rr|
+			for rr in mr[c]
 				sr[rr] += 1
 				if sr[rr] == 1
-					mc[rr].each do |cc|
+					for cc in mc[rr]
 						sc[cc] -= 1
 						if sc[cc] < m
 							m, m_c = sc[cc], cc
@@ -33,7 +33,7 @@ def sd_update(mr, mc, sr, sc, r, v)
 				end
 			end
 		else
-			mr[c].each do |rr|
+			for rr in mr[c]
 				sr[rr] -= 1
 				if sr[rr] == 0
 					p = mc[rr]
@@ -48,13 +48,13 @@ def sd_update(mr, mc, sr, sc, r, v)
 	[m, m_c]
 end
 
-def sd_solve(mr, mc, s : String)
-	ret, out, hints = [] of Array(Int32), [] of Int32, 0
+def sd_solve(mr, mc, s)
+	ret, out, hints = [], [], 0
 	sr = [0] * 729
 	sc = [9] * 324
 	cr = [-1] * 81
 	cc = [-1] * 81
-	(0...81).each do |i|
+	for i in 0...81
 		if s[i].ord >= 49 && s[i].ord <= 57
 			a = s[i].ord - 49
 		else
@@ -64,14 +64,14 @@ def sd_solve(mr, mc, s : String)
 			sd_update(mr, mc, sr, sc, i * 9 + a, 1)
 			hints += 1
 		end
-		out << a + 1
+		out.append(a + 1)
 	end
 	i, m, d = 0, 10, 1
 	while true
 		while i >= 0 && i < 81 - hints
 			if d == 1
 				if m > 1
-					(0...324).each do |c|
+					for c in 0...324
 						if sc[c] < m
 							m, cc[i] = sc[c], c
 							break if m < 2
@@ -88,7 +88,7 @@ def sd_solve(mr, mc, s : String)
 				sd_update(mr, mc, sr, sc, mr[c][cr[i]], -1)
 			end
 			r2_ = 9
-			((cr[i] + 1)...9).each do |r2|
+			for r2 in (cr[i] + 1)...9
 				if sr[mr[c][r2]] == 0
 					r2_ = r2
 					break
@@ -105,7 +105,7 @@ def sd_solve(mr, mc, s : String)
 		end
 		break if i < 0
 		y = out[0...81]
-		(0...i).each do |j|
+		for j in 0...i
 			r = mr[cc[j]][cr[j]]
 			y[r/9] = r%9 + 1
 		end
@@ -116,13 +116,29 @@ def sd_solve(mr, mc, s : String)
 	ret
 end
 
-mr, mc = sd_genmat()
-lines = File.read_lines("./sudoku.txt")
-50.times do
-  lines.each do |line|
-    if line.size >= 81
-      ret = sd_solve(mr, mc, line)
-      puts ret.map {|s| s.join }.join
+def write_solutions_file(sudoku_path, solution_path)
+  sudoku_file_lines = File.read(sudoku_path)
+
+  solutions = []
+	mr, mc = sd_genmat()
+  sudoku_file_lines.each_line do |line|
+    if line.length >= 81
+      puzzle_board = sd_solve(mr, mc, line)
+			solution = puzzle_board.map {|row| row.join }.join
+			solutions << solution
     end
   end
+  File.open(solution_path, 'w') do |f|
+	10.times do
+		solutions.each {|solution| f.puts(solution) }
+	end
+  end
 end
+
+def main
+  sudoku_path = File.expand_path('./sudoku.txt', File.dirname(__FILE__))
+  solution_path = File.expand_path('./solution.txt', File.dirname(__FILE__))
+  write_solutions_file(sudoku_path, solution_path) unless File.exists?(solution_path)
+end
+
+main if __FILE__ == $0

@@ -178,12 +178,11 @@ func fileToLines(filePath string) (lines []string, err error) {
 func main() {
 	a := sd_genmat()
 	lines, _ := fileToLines("./sudoku.txt")
-	for i := 1; i <= 50; i++ {
+	for i := 1; i <= 10; i++ {
 		for _, l := range lines {
 			if len(l) > 81 {
 				lineBytes := []byte(l)
 				sd_solve(a, lineBytes)
-				fmt.Println("")
 			}
 		}
 	}

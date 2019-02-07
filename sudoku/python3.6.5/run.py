@@ -86,10 +86,9 @@ def sd_solve(R, C, s):
 R, C = sd_genmat()
 with open('./sudoku.txt') as f:
 	lines = f.readlines()
-	for i in range(50):
+	for i in range(10):
 		for line in lines:
 			if len(line) >= 81:
 				ret = sd_solve(R, C, line)
 				for j in ret:
 					print(''.join(map(str, j)))
-				print('')
