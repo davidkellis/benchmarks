@@ -180,7 +180,7 @@ func main() {
 	lines, _ := fileToLines("./sudoku.txt")
 	for i := 1; i <= 10; i++ {
 		for _, l := range lines {
-			if len(l) > 81 {
+			if len(l) >= 81 {
 				lineBytes := []byte(l)
 				sd_solve(a, lineBytes)
 			}

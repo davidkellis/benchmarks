@@ -180,7 +180,7 @@ int sd_solve(const sdaux_t *aux, const char *_s)
 
 
 #define BUF 256 /* can change the buffer size as well */
-#define TOT 100 /* change to accomodate other sizes, change ONCE here */
+#define TOT 1000 /* change to accomodate other sizes, change ONCE here */
 
 int main(void) {
   char line[TOT][BUF];
