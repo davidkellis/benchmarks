@@ -26,16 +26,16 @@ def main
 
   benchmark_directories = Dir.glob('*').select { |f| File.directory?(f) }
   benchmark_directories.each do |benchmark_directory|
-    this_is_desired_benchmark = desired_benchmarks.empty? || 
+    this_is_desired_benchmark = desired_benchmarks.empty? ||
                                 desired_benchmarks.any? {|benchmark_path| benchmark_path.start_with?(benchmark_directory) }
     next unless this_is_desired_benchmark
-    next if File.exists?(File.join(benchmark_directory, "ignore"))
+    next if File.exist?(File.join(benchmark_directory, "ignore"))
 
     puts "Running #{benchmark_directory} benchmark"
     benchmark_all_languages_t1 = Time.now
 
     setup_file_path = File.join(benchmark_directory, "setup.rb")
-    if File.exists?(setup_file_path)
+    if File.exist?(setup_file_path)
       puts "Running setup for #{benchmark_directory} benchmark"
       `ruby #{setup_file_path}`
     end
@@ -46,18 +46,18 @@ def main
 
     language_directories = Dir.glob("#{benchmark_directory}/*").select { |f| File.directory?(f) }
     language_directories.each do |language_directory|
-      this_is_a_desired_language = desired_benchmarks.empty? || 
-                                   desired_benchmarks.any? {|benchmark_path| benchmark_path.start_with?(language_directory) || 
+      this_is_a_desired_language = desired_benchmarks.empty? ||
+                                   desired_benchmarks.any? {|benchmark_path| benchmark_path.start_with?(language_directory) ||
                                                                              language_directory.start_with?(benchmark_path) }
       next unless this_is_a_desired_language
-      next if File.exists?(File.join(language_directory, "ignore"))
+      next if File.exist?(File.join(language_directory, "ignore"))
 
       benchmark_name, language_name = *File.split(language_directory)
       docker_container_name = ["docker", benchmark_name, language_name].join("_")
       benchmark_output_prefix = [benchmark_name, language_name].join(":")
 
       dockerfile = File.join(language_directory, "Dockerfile")
-      if File.exists?(dockerfile)
+      if File.exist?(dockerfile)
         puts "  #{language_directory}"
 
         # 1. build docker image
@@ -81,7 +81,7 @@ def main
           # 3. verify benchmark printed the correct solution
           verify_script = File.join(benchmark_directory, "verify.rb")
           verify_succeeded = true
-          if File.exists?(verify_script)
+          if File.exist?(verify_script)
             cmd = "ruby #{verify_script}"
             puts "    #{cmd}" if verbose
             verify_output, verify_status = Open3.capture2e(cmd, stdin_data: program_output)
@@ -154,7 +154,7 @@ def main
     # max_memory_observations_in_mb_per_benchmark[benchmark_directory] = max_memory_observations_in_mb
 
     teardown_file_path = File.join(benchmark_directory, "teardown.rb")
-    if File.exists?(teardown_file_path)
+    if File.exist?(teardown_file_path)
       puts "Running teardown for #{benchmark_directory} benchmark"
       `ruby #{teardown_file_path}`
     end
@@ -179,16 +179,16 @@ end
 
 # metrics is a Hash of the form:
 # {
-#   "helloworld:ruby2.5.1:time"=>"8.657e-06s",
-#   "helloworld:ruby2.5.1:process_user_time"=>"0.06",
-#   "helloworld:ruby2.5.1:process_system_time"=>"0.01",
-#   "helloworld:ruby2.5.1:process_real_time"=>"0:00.07",
-#   "helloworld:ruby2.5.1:process_real_time_secs"=>0.07,
-#   "helloworld:ruby2.5.1:process_percent_cpu_time"=>"94%",
-#   "helloworld:ruby2.5.1:process_max_rss_mb"=>8.703125
+#   "helloworld:ruby:time"=>"8.657e-06s",
+#   "helloworld:ruby:process_user_time"=>"0.06",
+#   "helloworld:ruby:process_system_time"=>"0.01",
+#   "helloworld:ruby:process_real_time"=>"0:00.07",
+#   "helloworld:ruby:process_real_time_secs"=>0.07,
+#   "helloworld:ruby:process_percent_cpu_time"=>"94%",
+#   "helloworld:ruby:process_max_rss_mb"=>8.703125
 # }
 #
-# real_time_observations_in_seconds_per_benchmark is a hash of the 
+# real_time_observations_in_seconds_per_benchmark is a hash of the
 # form {benchmark_directory_name => array_of_real_time_observations_in_seconds, ...}, for example:
 # {
 #   "helloworld"=>[0.1, 0.02, 0.001, 0.0, 0.01, 0.01],
@@ -196,14 +196,23 @@ end
 #   ...
 # }
 #
-# max_memory_observations_in_mb_per_benchmark is a hash of the 
-# form {benchmark_directory_name => array_of_max_memory_observations_in_mb, ...}. It has 
+# max_memory_observations_in_mb_per_benchmark is a hash of the
+# form {benchmark_directory_name => array_of_max_memory_observations_in_mb, ...}. It has
 # the same structure as the real_time_observations_in_seconds_per_benchmark parameter - only the interpretation is different.
 def augment_metrics_with_normalized_metrics!(metrics)
   metrics_tuples = metrics.map {|k, v| k.split(":") << v }
+  # metrics_tuples is an array of the form:
+  # [
+  #   ["helloworld", "ruby", "time", "8.657e-06s"],
+  #   ["helloworld", "ruby", "process_real_time_secs", 0.07],
+  #   ...
+  # ]
   metrics_tuples.select! {|tuple| ["process_real_time_secs", "process_max_rss_mb"].include?(tuple[2]) }
-  metrics_tuples.reject! {|tuple| tuple.last =~ /error/ }
+  metrics_tuples.reject! {|tuple| /error/ === tuple.last }
   metrics_tuples_by_benchmark_and_metric_name = metrics_tuples.group_by{|tuple| [tuple[0], tuple[2]] }
+
+  puts "metrics_tuples:"
+  puts metrics_tuples.inspect
 
   metrics_tuples_by_benchmark_and_metric_name.each do |benchmark_and_metric_name_pair, tuples|
     min_metric_value = tuples.map(&:last).min
@@ -222,12 +231,12 @@ TraceWithMean = Struct.new(:trace, :mean)
 
 # metrics is a Hash of the form:
 # {
-#   "helloworld:ruby2.5.1:time"=>"8.657e-06s",
-#   "helloworld:ruby2.5.1:process_user_time"=>"0.06",
-#   "helloworld:ruby2.5.1:process_system_time"=>"0.01",
-#   "helloworld:ruby2.5.1:process_real_time"=>"0:00.07",
-#   "helloworld:ruby2.5.1:process_percent_cpu_time"=>"94%",
-#   "helloworld:ruby2.5.1:process_max_rss_mb"=>8.703125
+#   "helloworld:ruby:time"=>"8.657e-06s",
+#   "helloworld:ruby:process_user_time"=>"0.06",
+#   "helloworld:ruby:process_system_time"=>"0.01",
+#   "helloworld:ruby:process_real_time"=>"0:00.07",
+#   "helloworld:ruby:process_percent_cpu_time"=>"94%",
+#   "helloworld:ruby:process_max_rss_mb"=>8.703125
 # }
 def render_html_table(metrics, path)
   # logic to render the table
@@ -252,7 +261,7 @@ def render_html_table(metrics, path)
   end
 
   # logic to render the box plots
-  metrics_tuples = metrics.map {|k, v| k.split(":") << v }    # each tuple is of the form: ["helloworld", "ruby2.5.1", "process_real_time_secs", 0.07]
+  metrics_tuples = metrics.map {|k, v| k.split(":") << v }    # each tuple is of the form: ["helloworld", "ruby", "process_real_time_secs", 0.07]
   runtime_tuples = metrics_tuples.select {|tuple| tuple[2] == "normalized_process_real_time_secs" }
   maxmem_tuples = metrics_tuples.select {|tuple| tuple[2] == "normalized_process_max_rss_mb" }
 
@@ -303,18 +312,18 @@ def render_html_table(metrics, path)
   <html>
     <head>
       <title>Language Benchmarks</title>
-      <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.18/css/jquery.dataTables.min.css">
-      <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/rowgroup/1.0.3/css/rowGroup.dataTables.min.css">
+      <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+      <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/rowgroup/1.4.1/css/rowGroup.dataTables.min.css">
 
-      <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
-      <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
-      <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/rowgroup/1.0.3/js/dataTables.rowGroup.min.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+      <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+      <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/rowgroup/1.4.1/js/dataTables.rowGroup.min.js"></script>
 
       <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     </head>
     <body>
       <table id="metrics" class="display" width="100%"></table>
-      
+
       <div id="runtime-box-plot" style="width: 100%"></div>
 
       <div id="maxmem-box-plot" style="width: 100%"></div>
@@ -340,7 +349,7 @@ def render_html_table(metrics, path)
           var runtimeLayout = {
             title: 'Overall Normalized Runtime',
             xaxis: {
-              title: 'Runtime / Fastest Runtime (e.g. ruby2.5.1 base64 runtime / fastest base64 runtime)',
+              title: 'Runtime / Fastest Runtime (e.g. ruby base64 runtime / fastest base64 runtime)',
               zeroline: false
             },
             margin: {l: 160}
@@ -355,7 +364,7 @@ def render_html_table(metrics, path)
           var maxmemLayout = {
             title: 'Overall Normalized Maximum Memory',
             xaxis: {
-              title: 'MaxMem / Minimum MaxMem (e.g. ruby2.5.1 base64 maxmem / minimum base64 maxmem)',
+              title: 'MaxMem / Minimum MaxMem (e.g. ruby base64 maxmem / minimum base64 maxmem)',
               zeroline: false
             },
             margin: {l: 160}
@@ -378,7 +387,7 @@ def render_html_table(metrics, path)
 end
 
 def geometric_mean(arr)
-  mean = arr.map {|v| BigDecimal.new(v, 5) }.reduce(:*) ** (1.0 / arr.count)
+  mean = arr.map {|v| BigDecimal(v, 5) }.reduce(:*) ** (1.0 / arr.count)
   mean.to_f
 end
 

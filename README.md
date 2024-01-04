@@ -131,154 +131,154 @@ The corresponding html report can be viewed at https://davidkellis.github.io/ben
 ```
 $ ./run.rb
 Running binarytrees benchmark suite
-  binarytrees/ruby2.5.1
+  binarytrees/ruby
   binarytrees/gcc8.1.0
-  binarytrees/go1.10.3
-  binarytrees/rust1.26.2
+  binarytrees/go
+  binarytrees/rust
 
 Running helloworld benchmark suite
-  helloworld/ruby2.5.1
-  helloworld/crystal0.25.0
+  helloworld/ruby
+  helloworld/crystal
 
 Running base64 benchmark suite
-  base64/ruby2.5.1
-  base64/crystal0.25.0
-  base64/rust1.26.2
+  base64/ruby
+  base64/crystal
+  base64/rust
 
 Running matrixmultiply benchmark suite
-  matrixmultiply/go1.10.3gonum
-  matrixmultiply/ruby2.5.1
-  matrixmultiply/go1.10.3
+  matrixmultiply/gogonum
+  matrixmultiply/ruby
+  matrixmultiply/go
 
 Running json benchmark suite
 Running setup for json benchmark
-  json/ruby2.5.1
-  json/crystal0.25.0
+  json/ruby
+  json/crystal
 Running teardown for json benchmark
 
 Running pidigits benchmark suite
-  pidigits/ruby2.5.1
-  pidigits/crystal0.25.0
+  pidigits/ruby
+  pidigits/crystal
   pidigits/gcc8.1.0
-  pidigits/go1.10.3
-  pidigits/rust1.26.2
+  pidigits/go
+  pidigits/rust
 
 Running quicksort benchmark suite
 Running setup for quicksort benchmark
-  quicksort/ruby2.5.1
-  quicksort/crystal0.25.0
+  quicksort/ruby
+  quicksort/crystal
 Running teardown for quicksort benchmark
 
 All benchmarks run in 511.381802 seconds.
 
 Metrics (also written to index.html):
-{"binarytrees:ruby2.5.1:process_user_time"=>"140.26",
- "binarytrees:ruby2.5.1:process_system_time"=>"3.05",
- "binarytrees:ruby2.5.1:process_real_time"=>"0:46.03",
- "binarytrees:ruby2.5.1:process_percent_cpu_time"=>"311%",
- "binarytrees:ruby2.5.1:process_max_rss_mb"=>411.49609375,
+{"binarytrees:ruby:process_user_time"=>"140.26",
+ "binarytrees:ruby:process_system_time"=>"3.05",
+ "binarytrees:ruby:process_real_time"=>"0:46.03",
+ "binarytrees:ruby:process_percent_cpu_time"=>"311%",
+ "binarytrees:ruby:process_max_rss_mb"=>411.49609375,
  "binarytrees:gcc8.1.0:process_user_time"=>"7.53",
  "binarytrees:gcc8.1.0:process_system_time"=>"0.21",
  "binarytrees:gcc8.1.0:process_real_time"=>"0:02.37",
  "binarytrees:gcc8.1.0:process_percent_cpu_time"=>"325%",
  "binarytrees:gcc8.1.0:process_max_rss_mb"=>130.984375,
- "binarytrees:go1.10.3:process_user_time"=>"92.16",
- "binarytrees:go1.10.3:process_system_time"=>"9.60",
- "binarytrees:go1.10.3:process_real_time"=>"0:31.37",
- "binarytrees:go1.10.3:process_percent_cpu_time"=>"324%",
- "binarytrees:go1.10.3:process_max_rss_mb"=>386.21875,
- "binarytrees:rust1.26.2:process_user_time"=>"9.55",
- "binarytrees:rust1.26.2:process_system_time"=>"2.52",
- "binarytrees:rust1.26.2:process_real_time"=>"0:03.36",
- "binarytrees:rust1.26.2:process_percent_cpu_time"=>"359%",
- "binarytrees:rust1.26.2:process_max_rss_mb"=>167.734375,
- "helloworld:ruby2.5.1:time"=>"1.74e-05s",
- "helloworld:ruby2.5.1:process_user_time"=>"0.05",
- "helloworld:ruby2.5.1:process_system_time"=>"0.02",
- "helloworld:ruby2.5.1:process_real_time"=>"0:00.10",
- "helloworld:ruby2.5.1:process_percent_cpu_time"=>"68%",
- "helloworld:ruby2.5.1:process_max_rss_mb"=>8.765625,
- "helloworld:crystal0.25.0:time"=>"00:00:00.000036000s",
- "helloworld:crystal0.25.0:process_user_time"=>"0.00",
- "helloworld:crystal0.25.0:process_system_time"=>"0.00",
- "helloworld:crystal0.25.0:process_real_time"=>"0:00.01",
- "helloworld:crystal0.25.0:process_percent_cpu_time"=>"0%",
- "helloworld:crystal0.25.0:process_max_rss_mb"=>2.98828125,
- "base64:ruby2.5.1:process_user_time"=>"3.03",
- "base64:ruby2.5.1:process_system_time"=>"0.36",
- "base64:ruby2.5.1:process_real_time"=>"0:03.40",
- "base64:ruby2.5.1:process_percent_cpu_time"=>"99%",
- "base64:ruby2.5.1:process_max_rss_mb"=>180.84375,
- "base64:crystal0.25.0:process_user_time"=>"2.53",
- "base64:crystal0.25.0:process_system_time"=>"0.02",
- "base64:crystal0.25.0:process_real_time"=>"0:02.57",
- "base64:crystal0.25.0:process_percent_cpu_time"=>"99%",
- "base64:crystal0.25.0:process_max_rss_mb"=>57.26953125,
- "base64:rust1.26.2:process_user_time"=>"1.94",
- "base64:rust1.26.2:process_system_time"=>"1.26",
- "base64:rust1.26.2:process_real_time"=>"0:03.21",
- "base64:rust1.26.2:process_percent_cpu_time"=>"99%",
- "base64:rust1.26.2:process_max_rss_mb"=>37.078125,
- "matrixmultiply:go1.10.3gonum:process_user_time"=>"0.97",
- "matrixmultiply:go1.10.3gonum:process_system_time"=>"0.01",
- "matrixmultiply:go1.10.3gonum:process_real_time"=>"0:00.33",
- "matrixmultiply:go1.10.3gonum:process_percent_cpu_time"=>"294%",
- "matrixmultiply:go1.10.3gonum:process_max_rss_mb"=>25.58203125,
- "matrixmultiply:ruby2.5.1:process_user_time"=>"262.24",
- "matrixmultiply:ruby2.5.1:process_system_time"=>"0.03",
- "matrixmultiply:ruby2.5.1:process_real_time"=>"4:22.63",
- "matrixmultiply:ruby2.5.1:process_percent_cpu_time"=>"99%",
- "matrixmultiply:ruby2.5.1:process_max_rss_mb"=>93.76171875,
- "matrixmultiply:go1.10.3:process_user_time"=>"17.36",
- "matrixmultiply:go1.10.3:process_system_time"=>"0.18",
- "matrixmultiply:go1.10.3:process_real_time"=>"0:17.52",
- "matrixmultiply:go1.10.3:process_percent_cpu_time"=>"100%",
- "matrixmultiply:go1.10.3:process_max_rss_mb"=>26.421875,
- "json:ruby2.5.1:time"=>"7.7473012s",
- "json:ruby2.5.1:process_user_time"=>"7.75",
- "json:ruby2.5.1:process_system_time"=>"0.60",
- "json:ruby2.5.1:process_real_time"=>"0:08.37",
- "json:ruby2.5.1:process_percent_cpu_time"=>"99%",
- "json:ruby2.5.1:process_max_rss_mb"=>805.09765625,
- "json:crystal0.25.0:time"=>"00:00:02.415821000s",
- "json:crystal0.25.0:process_user_time"=>"2.78",
- "json:crystal0.25.0:process_system_time"=>"0.50",
- "json:crystal0.25.0:process_real_time"=>"0:02.58",
- "json:crystal0.25.0:process_percent_cpu_time"=>"126%",
- "json:crystal0.25.0:process_max_rss_mb"=>1035.5234375,
- "pidigits:ruby2.5.1:process_user_time"=>"8.18",
- "pidigits:ruby2.5.1:process_system_time"=>"0.60",
- "pidigits:ruby2.5.1:process_real_time"=>"0:08.80",
- "pidigits:ruby2.5.1:process_percent_cpu_time"=>"99%",
- "pidigits:ruby2.5.1:process_max_rss_mb"=>158.4921875,
- "pidigits:crystal0.25.0:process_user_time"=>"8.09",
- "pidigits:crystal0.25.0:process_system_time"=>"2.26",
- "pidigits:crystal0.25.0:process_real_time"=>"0:10.16",
- "pidigits:crystal0.25.0:process_percent_cpu_time"=>"101%",
- "pidigits:crystal0.25.0:process_max_rss_mb"=>7.8359375,
+ "binarytrees:go:process_user_time"=>"92.16",
+ "binarytrees:go:process_system_time"=>"9.60",
+ "binarytrees:go:process_real_time"=>"0:31.37",
+ "binarytrees:go:process_percent_cpu_time"=>"324%",
+ "binarytrees:go:process_max_rss_mb"=>386.21875,
+ "binarytrees:rust:process_user_time"=>"9.55",
+ "binarytrees:rust:process_system_time"=>"2.52",
+ "binarytrees:rust:process_real_time"=>"0:03.36",
+ "binarytrees:rust:process_percent_cpu_time"=>"359%",
+ "binarytrees:rust:process_max_rss_mb"=>167.734375,
+ "helloworld:ruby:time"=>"1.74e-05s",
+ "helloworld:ruby:process_user_time"=>"0.05",
+ "helloworld:ruby:process_system_time"=>"0.02",
+ "helloworld:ruby:process_real_time"=>"0:00.10",
+ "helloworld:ruby:process_percent_cpu_time"=>"68%",
+ "helloworld:ruby:process_max_rss_mb"=>8.765625,
+ "helloworld:crystal:time"=>"00:00:00.000036000s",
+ "helloworld:crystal:process_user_time"=>"0.00",
+ "helloworld:crystal:process_system_time"=>"0.00",
+ "helloworld:crystal:process_real_time"=>"0:00.01",
+ "helloworld:crystal:process_percent_cpu_time"=>"0%",
+ "helloworld:crystal:process_max_rss_mb"=>2.98828125,
+ "base64:ruby:process_user_time"=>"3.03",
+ "base64:ruby:process_system_time"=>"0.36",
+ "base64:ruby:process_real_time"=>"0:03.40",
+ "base64:ruby:process_percent_cpu_time"=>"99%",
+ "base64:ruby:process_max_rss_mb"=>180.84375,
+ "base64:crystal:process_user_time"=>"2.53",
+ "base64:crystal:process_system_time"=>"0.02",
+ "base64:crystal:process_real_time"=>"0:02.57",
+ "base64:crystal:process_percent_cpu_time"=>"99%",
+ "base64:crystal:process_max_rss_mb"=>57.26953125,
+ "base64:rust:process_user_time"=>"1.94",
+ "base64:rust:process_system_time"=>"1.26",
+ "base64:rust:process_real_time"=>"0:03.21",
+ "base64:rust:process_percent_cpu_time"=>"99%",
+ "base64:rust:process_max_rss_mb"=>37.078125,
+ "matrixmultiply:gogonum:process_user_time"=>"0.97",
+ "matrixmultiply:gogonum:process_system_time"=>"0.01",
+ "matrixmultiply:gogonum:process_real_time"=>"0:00.33",
+ "matrixmultiply:gogonum:process_percent_cpu_time"=>"294%",
+ "matrixmultiply:gogonum:process_max_rss_mb"=>25.58203125,
+ "matrixmultiply:ruby:process_user_time"=>"262.24",
+ "matrixmultiply:ruby:process_system_time"=>"0.03",
+ "matrixmultiply:ruby:process_real_time"=>"4:22.63",
+ "matrixmultiply:ruby:process_percent_cpu_time"=>"99%",
+ "matrixmultiply:ruby:process_max_rss_mb"=>93.76171875,
+ "matrixmultiply:go:process_user_time"=>"17.36",
+ "matrixmultiply:go:process_system_time"=>"0.18",
+ "matrixmultiply:go:process_real_time"=>"0:17.52",
+ "matrixmultiply:go:process_percent_cpu_time"=>"100%",
+ "matrixmultiply:go:process_max_rss_mb"=>26.421875,
+ "json:ruby:time"=>"7.7473012s",
+ "json:ruby:process_user_time"=>"7.75",
+ "json:ruby:process_system_time"=>"0.60",
+ "json:ruby:process_real_time"=>"0:08.37",
+ "json:ruby:process_percent_cpu_time"=>"99%",
+ "json:ruby:process_max_rss_mb"=>805.09765625,
+ "json:crystal:time"=>"00:00:02.415821000s",
+ "json:crystal:process_user_time"=>"2.78",
+ "json:crystal:process_system_time"=>"0.50",
+ "json:crystal:process_real_time"=>"0:02.58",
+ "json:crystal:process_percent_cpu_time"=>"126%",
+ "json:crystal:process_max_rss_mb"=>1035.5234375,
+ "pidigits:ruby:process_user_time"=>"8.18",
+ "pidigits:ruby:process_system_time"=>"0.60",
+ "pidigits:ruby:process_real_time"=>"0:08.80",
+ "pidigits:ruby:process_percent_cpu_time"=>"99%",
+ "pidigits:ruby:process_max_rss_mb"=>158.4921875,
+ "pidigits:crystal:process_user_time"=>"8.09",
+ "pidigits:crystal:process_system_time"=>"2.26",
+ "pidigits:crystal:process_real_time"=>"0:10.16",
+ "pidigits:crystal:process_percent_cpu_time"=>"101%",
+ "pidigits:crystal:process_max_rss_mb"=>7.8359375,
  "pidigits:gcc8.1.0:process_user_time"=>"0.76",
  "pidigits:gcc8.1.0:process_system_time"=>"0.00",
  "pidigits:gcc8.1.0:process_real_time"=>"0:00.77",
  "pidigits:gcc8.1.0:process_percent_cpu_time"=>"98%",
  "pidigits:gcc8.1.0:process_max_rss_mb"=>2.125,
- "pidigits:go1.10.3:process_user_time"=>"1.23",
- "pidigits:go1.10.3:process_system_time"=>"0.06",
- "pidigits:go1.10.3:process_real_time"=>"0:01.26",
- "pidigits:go1.10.3:process_percent_cpu_time"=>"101%",
- "pidigits:go1.10.3:process_max_rss_mb"=>9.01953125,
- "pidigits:rust1.26.2:process_user_time"=>"0.76",
- "pidigits:rust1.26.2:process_system_time"=>"0.00",
- "pidigits:rust1.26.2:process_real_time"=>"0:00.76",
- "pidigits:rust1.26.2:process_percent_cpu_time"=>"99%",
- "pidigits:rust1.26.2:process_max_rss_mb"=>4.40234375,
- "quicksort:ruby2.5.1:process_user_time"=>"4.21",
- "quicksort:ruby2.5.1:process_system_time"=>"0.08",
- "quicksort:ruby2.5.1:process_real_time"=>"0:04.30",
- "quicksort:ruby2.5.1:process_percent_cpu_time"=>"99%",
- "quicksort:ruby2.5.1:process_max_rss_mb"=>151.21484375,
- "quicksort:crystal0.25.0:process_user_time"=>"1.78",
- "quicksort:crystal0.25.0:process_system_time"=>"0.16",
- "quicksort:crystal0.25.0:process_real_time"=>"0:01.65",
- "quicksort:crystal0.25.0:process_percent_cpu_time"=>"117%",
- "quicksort:crystal0.25.0:process_max_rss_mb"=>103.734375}
+ "pidigits:go:process_user_time"=>"1.23",
+ "pidigits:go:process_system_time"=>"0.06",
+ "pidigits:go:process_real_time"=>"0:01.26",
+ "pidigits:go:process_percent_cpu_time"=>"101%",
+ "pidigits:go:process_max_rss_mb"=>9.01953125,
+ "pidigits:rust:process_user_time"=>"0.76",
+ "pidigits:rust:process_system_time"=>"0.00",
+ "pidigits:rust:process_real_time"=>"0:00.76",
+ "pidigits:rust:process_percent_cpu_time"=>"99%",
+ "pidigits:rust:process_max_rss_mb"=>4.40234375,
+ "quicksort:ruby:process_user_time"=>"4.21",
+ "quicksort:ruby:process_system_time"=>"0.08",
+ "quicksort:ruby:process_real_time"=>"0:04.30",
+ "quicksort:ruby:process_percent_cpu_time"=>"99%",
+ "quicksort:ruby:process_max_rss_mb"=>151.21484375,
+ "quicksort:crystal:process_user_time"=>"1.78",
+ "quicksort:crystal:process_system_time"=>"0.16",
+ "quicksort:crystal:process_real_time"=>"0:01.65",
+ "quicksort:crystal:process_percent_cpu_time"=>"117%",
+ "quicksort:crystal:process_max_rss_mb"=>103.734375}
 ```

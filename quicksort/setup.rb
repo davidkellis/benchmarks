@@ -12,7 +12,7 @@ end
 def main
   numbers_path = File.expand_path('./numbers.txt', File.dirname(__FILE__))
   solution_path = File.expand_path('./solution.txt', File.dirname(__FILE__))
-  write_number_file(numbers_path, solution_path) unless File.exists?(numbers_path) && File.exists?(solution_path)
+  write_number_file(numbers_path, solution_path) unless File.exist?(numbers_path) && File.exist?(solution_path)
 end
 
 main if __FILE__ == $0

@@ -138,7 +138,7 @@ end
 def main
   sudoku_path = File.expand_path('./sudoku.txt', File.dirname(__FILE__))
   solution_path = File.expand_path('./solution.txt', File.dirname(__FILE__))
-  write_solutions_file(sudoku_path, solution_path) unless File.exists?(solution_path)
+  write_solutions_file(sudoku_path, solution_path) unless File.exist?(solution_path)
 end
 
 main if __FILE__ == $0
