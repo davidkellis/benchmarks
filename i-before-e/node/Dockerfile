@@ -1,4 +1,4 @@
-FROM node:10.15.1
+FROM node:latest
 
 RUN apt-get update && apt-get install -y time
 
@@ -8,6 +8,6 @@ WORKDIR /app
 # and the context directory is being specified as the benchmarks/ root directory
 COPY time.sh .
 COPY i-before-e/wordlist.txt .
-COPY i-before-e/javascript-node10.15.1/run.js .
+COPY i-before-e/node/run.js .
 
 CMD ["./time.sh", "node", "run.js", "wordlist.txt"]

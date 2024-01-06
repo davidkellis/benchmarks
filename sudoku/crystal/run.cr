@@ -3,7 +3,7 @@ def sd_genmat()
 	mc = Array(Array(Int32)).new(729) { [] of Int32 }
 	r = 0
 	(0...729).each do |n|
-		mc[n] = [n/9, n/81*9 + n%9 + 81, n%81 + 162, n%9*9 + n/243*3 + n/27%3 + 243]
+		mc[n] = [n//9, n//81*9 + n%9 + 81, n%81 + 162, n%9*9 + n//243*3 + n//27%3 + 243]
 	end
 	(0...729).each do |r|
 		(0...4).each do |c2|
@@ -107,7 +107,7 @@ def sd_solve(mr, mc, s : String)
 		y = out[0...81]
 		(0...i).each do |j|
 			r = mr[cc[j]][cr[j]]
-			y[r/9] = r%9 + 1
+			y[r//9] = r%9 + 1
 		end
 		ret << y
 		i -= 1

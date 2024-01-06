@@ -26,7 +26,7 @@ def matmul(a, b)
   c
 end
 
-def matgen(n)
+def matgen(n : Int)
   tmp = 1.0 / n / n
   a = Array.new(n) { Array.new(n, 0.0) }
   (0...n).each do |i|
@@ -38,11 +38,11 @@ def matgen(n)
 end
 
 n = (ARGV[0]? || 100).to_i
-n = n / 2 * 2
+n = n // 2 * 2
 a = matgen(n)
 b = matgen(n)
 c = matmul(a, b)
-puts c[n / 2][n / 2]
+puts c[n // 2][n // 2]
 
 # def rand_matrix(n)
 #   # rows = n.times.map { n.times.map { rand } }

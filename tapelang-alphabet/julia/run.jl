@@ -86,5 +86,5 @@ function main(text)
   run(Program(text))
 end
 
-text = open(readstring, ARGS[1])
+text = read(ARGS[1], String)
 main(text)
