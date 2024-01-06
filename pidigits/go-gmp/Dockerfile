@@ -9,8 +9,6 @@ WORKDIR /go/src/app
 COPY time.sh .
 COPY pidigits/go-gmp/*.go .
 
-RUN go get github.com/ncw/gmp
-
 RUN go build app.go
 
 CMD ["./time.sh", "./app", "10000"]

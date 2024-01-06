@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 def write_number_file(numbers_path, solution_path)
-  numbers = 1_000_000.times.map { rand(1_000_000_000) }
+  numbers = 10_000_000.times.map { rand(1_000_000_000) }
   File.open(numbers_path, 'w') {|f| f.puts(numbers.join(",")) }
 
   sorted_list = numbers.sort

@@ -1,5 +1,3 @@
-// Taken from https://github.com/kostya/benchmarks/blob/master/json/test.go
-
 package main
 
 import (
