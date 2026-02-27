@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Language Benchmarks</title>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0; padding: 20px; background: #f5f5f5; color: #333;
+    }
+    .header { text-align: center; margin-bottom: 24px; }
+    .header h1 { margin: 0 0 4px; font-size: 28px; }
+    .header .subtitle { color: #666; font-size: 14px; }
+    .filter-bar {
+      display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+      margin-bottom: 24px; padding: 12px; background: #fff;
+      border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .filter-pill {
+      padding: 6px 14px; border-radius: 20px; border: 2px solid;
+      cursor: pointer; font-size: 13px; font-weight: 600;
+      transition: opacity 0.15s;
+    }
+    .filter-pill.inactive { opacity: 0.3; }
+    .card {
+      background: #fff; border-radius: 8px; padding: 20px; margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .card h2 { margin: 0 0 4px; font-size: 20px; }
+    .card .card-subtitle { color: #888; font-size: 13px; margin-bottom: 12px; }
+    .toggle-group {
+      display: inline-flex; border: 1px solid #ddd; border-radius: 4px; overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .toggle-btn {
+      padding: 4px 12px; font-size: 12px; cursor: pointer; background: #fff;
+      border: none; border-right: 1px solid #ddd;
+    }
+    .toggle-btn:last-child { border-right: none; }
+    .toggle-btn.active { background: #333; color: #fff; }
+    .chart-row { display: flex; gap: 20px; flex-wrap: wrap; }
+    .chart-row > div { flex: 1; min-width: 300px; }
+    .rankings-row { display: flex; gap: 20px; flex-wrap: wrap; }
+    .rankings-row > div { flex: 1; min-width: 400px; }
+    details.data-table-wrapper { margin-top: 20px; }
+    details.data-table-wrapper summary {
+      cursor: pointer; font-size: 16px; font-weight: 600; padding: 12px;
+      background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    table.data-table {
+      width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px;
+      background: #fff; border-radius: 8px; overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    table.data-table th {
+      background: #f8f8f8; padding: 8px 10px; text-align: left;
+      border-bottom: 2px solid #ddd; cursor: pointer; white-space: nowrap;
+      user-select: none;
+    }
+    table.data-table th:hover { background: #eee; }
+    table.data-table th .sort-arrow { font-size: 10px; margin-left: 4px; }
+    table.data-table td { padding: 6px 10px; border-bottom: 1px solid #eee; }
+    table.data-table tr:hover { background: #f9f9f9; }
+    .error-cell { color: #c00; font-style: italic; }
+    .loading { text-align: center; padding: 60px; color: #999; font-size: 18px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Language Benchmarks</h1>
+    <div class="subtitle" id="subtitle">Loading results...</div>
+  </div>
+  <div class="filter-bar" id="filter-bar"></div>
+  <div class="card">
+    <h2>Overall Rankings</h2>
+    <div class="card-subtitle">Geometric mean of normalized scores across all benchmarks</div>
+    <div class="rankings-row">
+      <div id="ranking-time"></div>
+      <div id="ranking-memory"></div>
+    </div>
+  </div>
+  <div id="benchmark-sections"></div>
+  <details class="data-table-wrapper">
+    <summary>Raw Data Table</summary>
+    <div id="table-container"></div>
+  </details>
+  <div class="loading" id="loading">Loading results.json...</div>
+
+<script>
+let data = null;
+let activeLanguages = new Set();
+
+function lightenColor(hex, amount) {
+  hex = hex.replace('#', '');
+  let r = parseInt(hex.substring(0, 2), 16);
+  let g = parseInt(hex.substring(2, 4), 16);
+  let b = parseInt(hex.substring(4, 6), 16);
+  r = Math.min(255, r + Math.round((255 - r) * amount));
+  g = Math.min(255, g + Math.round((255 - g) * amount));
+  b = Math.min(255, b + Math.round((255 - b) * amount));
+  return '#' + [r, g, b].map(c => c.toString(16).padStart(2, '0')).join('');
+}
+
+function getImplColor(result) {
+  const base = data.language_colors[result.language_family] || '#999';
+  // Newer version (or no version) gets base color; older gets lighter
+  if (!result.version) return base;
+  const siblings = data.results.filter(r =>
+    r.language_family === result.language_family && r.benchmark === result.benchmark && !r.variant
+  );
+  const versions = [...new Set(siblings.map(r => r.version).filter(Boolean))].sort();
+  if (versions.length <= 1) return base;
+  return result.version === versions[versions.length - 1] ? base : lightenColor(base, 0.45);
+}
+
+function isVisible(result) {
+  return activeLanguages.has(result.language_family);
+}
+
+function renderFilterBar() {
+  const bar = document.getElementById('filter-bar');
+  bar.innerHTML = '';
+  const families = Object.keys(data.language_colors);
+  families.forEach(lang => {
+    const pill = document.createElement('span');
+    pill.className = 'filter-pill' + (activeLanguages.has(lang) ? '' : ' inactive');
+    pill.textContent = lang;
+    const color = data.language_colors[lang];
+    pill.style.borderColor = color;
+    pill.style.color = color;
+    if (activeLanguages.has(lang)) {
+      pill.style.background = color + '18';
+    }
+    pill.onclick = () => {
+      if (activeLanguages.has(lang)) activeLanguages.delete(lang);
+      else activeLanguages.add(lang);
+      renderAll();
+    };
+    bar.appendChild(pill);
+  });
+}
+
+function renderOverallRankings() {
+  const visible = data.rankings.filter(r => activeLanguages.has(r.language_family));
+
+  // Time ranking
+  const timeData = visible.filter(r => r.geo_mean_time != null).sort((a, b) => a.geo_mean_time - b.geo_mean_time);
+  Plotly.newPlot('ranking-time', [{
+    type: 'bar', orientation: 'h',
+    y: timeData.map(r => r.implementation),
+    x: timeData.map(r => r.geo_mean_time),
+    marker: { color: timeData.map(r => data.language_colors[r.language_family] || '#999') },
+    text: timeData.map(r => r.geo_mean_time.toFixed(2) + 'x'),
+    textposition: 'outside',
+    hovertemplate: '%{y}: %{x:.2f}x<br>OK: ' +
+      timeData.map(r => r.benchmarks_ok).join(',') + '<extra></extra>'
+  }], {
+    title: 'Geo Mean Normalized Runtime',
+    xaxis: { title: 'Normalized time (lower is better)' },
+    yaxis: { autorange: 'reversed' },
+    margin: { l: 120, r: 60, t: 40, b: 40 },
+    height: Math.max(300, timeData.length * 32 + 80)
+  }, { responsive: true });
+
+  // Memory ranking
+  const memData = visible.filter(r => r.geo_mean_memory != null).sort((a, b) => a.geo_mean_memory - b.geo_mean_memory);
+  Plotly.newPlot('ranking-memory', [{
+    type: 'bar', orientation: 'h',
+    y: memData.map(r => r.implementation),
+    x: memData.map(r => r.geo_mean_memory),
+    marker: { color: memData.map(r => data.language_colors[r.language_family] || '#999') },
+    text: memData.map(r => r.geo_mean_memory.toFixed(2) + 'x'),
+    textposition: 'outside',
+    hovertemplate: '%{y}: %{x:.2f}x<extra></extra>'
+  }], {
+    title: 'Geo Mean Normalized Memory',
+    xaxis: { title: 'Normalized memory (lower is better)' },
+    yaxis: { autorange: 'reversed' },
+    margin: { l: 120, r: 60, t: 40, b: 40 },
+    height: Math.max(300, memData.length * 32 + 80)
+  }, { responsive: true });
+}
+
+function renderBenchmarkSections() {
+  const container = document.getElementById('benchmark-sections');
+  container.innerHTML = '';
+
+  data.benchmarks.forEach(bench => {
+    const results = data.results.filter(r => r.benchmark === bench && isVisible(r));
+    if (results.length === 0) return;
+
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    const okResults = results.filter(r => r.status === 'ok');
+    const errResults = results.filter(r => r.status !== 'ok');
+
+    // Header
+    const h2 = document.createElement('h2');
+    h2.textContent = bench;
+    card.appendChild(h2);
+
+    const sub = document.createElement('div');
+    sub.className = 'card-subtitle';
+    sub.textContent = `${okResults.length} implementations` + (errResults.length ? `, ${errResults.length} errors` : '');
+    card.appendChild(sub);
+
+    // Toggle buttons
+    const toggleGroup = document.createElement('div');
+    toggleGroup.className = 'toggle-group';
+    const btnTime = document.createElement('button');
+    btnTime.className = 'toggle-btn active';
+    btnTime.textContent = 'Runtime';
+    const btnMem = document.createElement('button');
+    btnMem.className = 'toggle-btn';
+    btnMem.textContent = 'Memory';
+    toggleGroup.appendChild(btnTime);
+    toggleGroup.appendChild(btnMem);
+    card.appendChild(toggleGroup);
+
+    // Chart containers
+    const chartRow = document.createElement('div');
+    chartRow.className = 'chart-row';
+    const mainChart = document.createElement('div');
+    mainChart.id = `chart-${bench}-main`;
+    const versionChart = document.createElement('div');
+    versionChart.id = `chart-${bench}-version`;
+    chartRow.appendChild(mainChart);
+    chartRow.appendChild(versionChart);
+    card.appendChild(chartRow);
+
+    container.appendChild(card);
+
+    let currentMetric = 'time';
+
+    function renderCharts() {
+      const isTime = currentMetric === 'time';
+      const getValue = r => isTime ? r.real_time_secs : r.max_rss_mb;
+      const unit = isTime ? 's' : ' MB';
+      const axisTitle = isTime ? 'Time (seconds)' : 'Max RSS (MB)';
+
+      // Main bar chart - sorted fastest first
+      const sorted = [...okResults].sort((a, b) => getValue(a) - getValue(b));
+      const allEntries = [...sorted, ...errResults];
+
+      Plotly.newPlot(mainChart, [{
+        type: 'bar', orientation: 'h',
+        y: allEntries.map(r => r.implementation),
+        x: allEntries.map(r => r.status === 'ok' ? getValue(r) : null),
+        marker: {
+          color: allEntries.map(r => r.status === 'ok' ? getImplColor(r) : '#ccc')
+        },
+        text: allEntries.map(r => {
+          if (r.status !== 'ok') return r.status;
+          return getValue(r) != null ? (isTime ? getValue(r).toFixed(2) + 's' : getValue(r).toFixed(1) + ' MB') : '';
+        }),
+        textposition: 'outside',
+        hovertemplate: allEntries.map(r => {
+          if (r.status !== 'ok') return r.implementation + ': ' + r.status + '<extra></extra>';
+          return r.implementation + '<br>Time: ' + (r.real_time_secs != null ? r.real_time_secs.toFixed(2) + 's' : 'N/A') +
+            '<br>Memory: ' + (r.max_rss_mb != null ? r.max_rss_mb.toFixed(1) + ' MB' : 'N/A') +
+            '<br>CPU: ' + (r.percent_cpu != null ? r.percent_cpu + '%' : 'N/A') + '<extra></extra>';
+        })
+      }], {
+        xaxis: { title: axisTitle },
+        yaxis: { autorange: 'reversed' },
+        margin: { l: 130, r: 80, t: 10, b: 40 },
+        height: Math.max(250, allEntries.length * 28 + 60)
+      }, { responsive: true });
+
+      // Version comparison - grouped bars for languages with 2+ versions
+      const byFamily = {};
+      okResults.forEach(r => {
+        if (!r.variant && r.version) {
+          byFamily[r.language_family] = byFamily[r.language_family] || [];
+          byFamily[r.language_family].push(r);
+        }
+      });
+      const families = Object.keys(byFamily).filter(f => byFamily[f].length >= 2);
+
+      if (families.length === 0) {
+        Plotly.purge(versionChart);
+        versionChart.innerHTML = '<div style="color:#999;padding:40px;text-align:center;font-size:13px;">No version comparisons available</div>';
+        return;
+      }
+
+      const traces = [];
+      const allVersions = new Set();
+      families.forEach(f => byFamily[f].forEach(r => allVersions.add(r.version)));
+      const versionList = [...allVersions].sort();
+
+      versionList.forEach(ver => {
+        traces.push({
+          type: 'bar', name: ver,
+          x: families,
+          y: families.map(f => {
+            const r = byFamily[f].find(r => r.version === ver);
+            return r ? getValue(r) : null;
+          }),
+          marker: {
+            color: families.map(f => {
+              const r = byFamily[f].find(r => r.version === ver);
+              return r ? getImplColor(r) : '#ccc';
+            })
+          },
+          text: families.map(f => {
+            const r = byFamily[f].find(r => r.version === ver);
+            if (!r) return '';
+            return isTime ? getValue(r).toFixed(2) + 's' : getValue(r).toFixed(1) + ' MB';
+          }),
+          textposition: 'outside'
+        });
+      });
+
+      Plotly.newPlot(versionChart, traces, {
+        title: 'Version Comparison',
+        barmode: 'group',
+        yaxis: { title: axisTitle },
+        margin: { l: 60, r: 20, t: 40, b: 60 },
+        height: 350,
+        showlegend: true,
+        legend: { orientation: 'h', y: -0.2 }
+      }, { responsive: true });
+    }
+
+    btnTime.onclick = () => {
+      currentMetric = 'time';
+      btnTime.classList.add('active');
+      btnMem.classList.remove('active');
+      renderCharts();
+    };
+    btnMem.onclick = () => {
+      currentMetric = 'memory';
+      btnMem.classList.add('active');
+      btnTime.classList.remove('active');
+      renderCharts();
+    };
+
+    renderCharts();
+  });
+}
+
+function renderDataTable() {
+  const container = document.getElementById('table-container');
+  const visible = data.results.filter(r => isVisible(r));
+
+  const columns = [
+    { key: 'benchmark', label: 'Benchmark' },
+    { key: 'implementation', label: 'Implementation' },
+    { key: 'language_family', label: 'Language' },
+    { key: 'status', label: 'Status' },
+    { key: 'real_time_secs', label: 'Time (s)', numeric: true },
+    { key: 'percent_cpu', label: 'CPU %', numeric: true },
+    { key: 'max_rss_mb', label: 'Max RSS (MB)', numeric: true },
+    { key: 'normalized_real_time', label: 'Norm Time', numeric: true },
+    { key: 'normalized_max_rss_mb', label: 'Norm Memory', numeric: true }
+  ];
+
+  let sortCol = 0;
+  let sortAsc = true;
+
+  function render() {
+    const sorted = [...visible].sort((a, b) => {
+      const col = columns[sortCol];
+      let av = a[col.key], bv = b[col.key];
+      if (av == null) return 1;
+      if (bv == null) return -1;
+      if (col.numeric) return sortAsc ? av - bv : bv - av;
+      return sortAsc ? String(av).localeCompare(String(bv)) : String(bv).localeCompare(String(av));
+    });
+
+    let html = '<table class="data-table"><thead><tr>';
+    columns.forEach((col, i) => {
+      const arrow = i === sortCol ? (sortAsc ? ' \u25B2' : ' \u25BC') : '';
+      html += `<th data-col="${i}">${col.label}<span class="sort-arrow">${arrow}</span></th>`;
+    });
+    html += '</tr></thead><tbody>';
+
+    sorted.forEach(r => {
+      html += '<tr>';
+      columns.forEach(col => {
+        let val = r[col.key];
+        if (val == null) {
+          html += '<td>-</td>';
+        } else if (typeof val === 'string' && val.includes('error')) {
+          html += `<td class="error-cell">${val}</td>`;
+        } else if (col.numeric && typeof val === 'number') {
+          html += `<td>${col.key.includes('normalized') ? val.toFixed(2) : (col.key === 'percent_cpu' ? val : val.toFixed(2))}</td>`;
+        } else {
+          html += `<td>${val}</td>`;
+        }
+      });
+      html += '</tr>';
+    });
+    html += '</tbody></table>';
+    container.innerHTML = html;
+
+    container.querySelectorAll('th').forEach(th => {
+      th.onclick = () => {
+        const col = parseInt(th.dataset.col);
+        if (sortCol === col) sortAsc = !sortAsc;
+        else { sortCol = col; sortAsc = true; }
+        render();
+      };
+    });
+  }
+  render();
+}
+
+function renderAll() {
+  renderFilterBar();
+  renderOverallRankings();
+  renderBenchmarkSections();
+  renderDataTable();
+}
+
+async function init() {
+  try {
+    const resp = await fetch('results.json');
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    data = await resp.json();
+  } catch (e) {
+    document.getElementById('loading').textContent = `Failed to load results.json: ${e.message}. Run benchmarks first with: just run`;
+    return;
+  }
+  document.getElementById('loading').style.display = 'none';
+
+  activeLanguages = new Set(Object.keys(data.language_colors));
+
+  const date = new Date(data.generated_at);
+  document.getElementById('subtitle').textContent =
+    `Generated ${date.toLocaleDateString()} | ${data.benchmarks.length} benchmarks | ${data.results.length} results | ${Math.round(data.duration_seconds / 60)} min runtime`;
+
+  renderAll();
+}
+
+init();
+</script>
+</body>
+</html>

@@ -5,6 +5,14 @@ require 'json'
 require 'open3'
 require 'optparse'
 require 'pp'
+require 'time'
+
+LANGUAGE_COLORS = {
+  "ruby" => "#CC342D", "python" => "#3776AB", "go" => "#00ADD8",
+  "rust" => "#DEA584", "crystal" => "#000000", "gcc" => "#A8B9CC",
+  "node" => "#339933", "java" => "#ED8B00", "csharp" => "#68217A",
+  "kotlin" => "#7F52FF", "julia" => "#9558B2", "bun" => "#FBF0DF", "vlang" => "#5D87BF"
+}
 
 def main
   verbose = false
@@ -175,6 +183,9 @@ def main
   pp all_metrics
 
   render_html_table(all_metrics, "index.html")
+
+  duration_seconds = benchmark_suite_t2 - benchmark_suite_t1
+  write_results_json(all_metrics, duration_seconds, "results.json")
 end
 
 # metrics is a Hash of the form:
@@ -384,6 +395,74 @@ def render_html_table(metrics, path)
   EOF
 
   File.open(path, 'w') {|f| f.puts(html) }
+end
+
+# Parse implementation directory name into [language_family, version, variant]
+# Examples: "vlang" => ["vlang", nil, nil], "ruby-3.3" => ["ruby", "3.3", nil], "ruby-3.3-jit" => ["ruby", "3.3", "jit"]
+def parse_implementation_name(name)
+  m = name.match(/^([a-z]+)(?:-(\d[\d.]*))?(?:-(.+))?$/)
+  return [name, nil, nil] unless m
+  [m[1], m[2], m[3]]
+end
+
+def write_results_json(all_metrics, duration_seconds, path)
+  # Collect unique benchmarks and build per-result records
+  benchmarks = Set.new
+  results = []
+  metrics_tuples = all_metrics.map { |k, v| k.split(":") << v }
+
+  # Group by benchmark:implementation
+  grouped = metrics_tuples.group_by { |t| [t[0], t[1]] }
+  grouped.each do |(benchmark, implementation), tuples|
+    benchmarks << benchmark
+    language_family, version, variant = parse_implementation_name(implementation)
+
+    metric_hash = tuples.each_with_object({}) { |t, h| h[t[2]] = t[3] }
+
+    is_error = metric_hash["process_real_time_secs"].is_a?(String) && metric_hash["process_real_time_secs"].include?("error")
+    results << {
+      benchmark: benchmark,
+      implementation: implementation,
+      language_family: language_family,
+      version: version,
+      variant: variant,
+      status: is_error ? metric_hash["process_real_time_secs"] : "ok",
+      real_time_secs: is_error ? nil : metric_hash["process_real_time_secs"],
+      percent_cpu: is_error ? nil : metric_hash["process_percent_cpu_time"],
+      max_rss_mb: is_error ? nil : metric_hash["process_max_rss_mb"],
+      normalized_real_time: is_error ? nil : metric_hash["normalized_process_real_time_secs"],
+      normalized_max_rss_mb: is_error ? nil : metric_hash["normalized_process_max_rss_mb"]
+    }
+  end
+
+  # Build rankings: geometric mean of normalized times per implementation
+  results_by_impl = results.group_by { |r| r[:implementation] }
+  rankings = results_by_impl.map do |impl, impl_results|
+    ok_results = impl_results.select { |r| r[:status] == "ok" }
+    norm_times = ok_results.map { |r| r[:normalized_real_time] }.compact
+    norm_mems = ok_results.map { |r| r[:normalized_max_rss_mb] }.compact
+    language_family, = parse_implementation_name(impl)
+    {
+      implementation: impl,
+      language_family: language_family,
+      geo_mean_time: norm_times.any? ? geometric_mean(norm_times) : nil,
+      geo_mean_memory: norm_mems.any? ? geometric_mean(norm_mems) : nil,
+      benchmarks_ok: ok_results.count,
+      benchmarks_errored: impl_results.count - ok_results.count
+    }
+  end.sort_by { |r| r[:geo_mean_time] || Float::INFINITY }
+
+  output = {
+    generated_at: Time.now.utc.iso8601,
+    duration_seconds: duration_seconds.round(1),
+    benchmarks: benchmarks.sort.to_a,
+    language_colors: LANGUAGE_COLORS,
+    results: results,
+    rankings: rankings
+  }
+
+  File.write(path, JSON.pretty_generate(output))
+  puts "Results written to #{path}"
 end
 
 def geometric_mean(arr)

@@ -1,0 +1,6 @@
+[package]
+name = "matmul"
+version = "0.1.0"
+authors = ["See commit history on https://github.com/kostya/benchmarks/blob/master/matmul/matmul.rs"]
+
+[dependencies]
