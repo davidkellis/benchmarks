@@ -11,7 +11,8 @@ LANGUAGE_COLORS = {
   "ruby" => "#CC342D", "python" => "#3776AB", "go" => "#00ADD8",
   "rust" => "#DEA584", "crystal" => "#000000", "gcc" => "#A8B9CC",
   "node" => "#339933", "java" => "#ED8B00", "csharp" => "#68217A",
-  "kotlin" => "#7F52FF", "julia" => "#9558B2", "bun" => "#FBF0DF", "vlang" => "#5D87BF"
+  "kotlin" => "#7F52FF", "julia" => "#9558B2", "bun" => "#FBF0DF", "vlang" => "#5D87BF",
+  "able" => "#4A90D9"
 }
 
 def main
@@ -69,7 +70,9 @@ def main
         puts "  #{language_directory}"
 
         # 1. build docker image
-        cmd = "docker build -t #{docker_container_name} -f #{language_directory}/Dockerfile ."
+        docker_context_file = File.join(language_directory, ".docker-context")
+        docker_context = File.exist?(docker_context_file) ? File.read(docker_context_file).strip : "."
+        cmd = "docker build -t #{docker_container_name} -f #{language_directory}/Dockerfile #{docker_context}"
         puts "    #{cmd}" if verbose
         program_output, process_status = Open3.capture2e(cmd)    # stdout and stderr are merged into the first return value
         build_succeeded = process_status.success?
@@ -400,7 +403,7 @@ end
 # Parse implementation directory name into [language_family, version, variant]
 # Examples: "vlang" => ["vlang", nil, nil], "ruby-3.3" => ["ruby", "3.3", nil], "ruby-3.3-jit" => ["ruby", "3.3", "jit"]
 def parse_implementation_name(name)
-  m = name.match(/^([a-z]+)(?:-(\d[\d.]*))?(?:-(.+))?$/)
+  m = name.match(/^([a-z]+)(?:-(v?\d[\d.]*))?(?:-(.+))?$/)
   return [name, nil, nil] unless m
   [m[1], m[2], m[3]]
 end

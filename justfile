@@ -78,6 +78,30 @@ report:
         echo "report.html"
     fi
 
+# Build able-v12-base Docker image from ../able source
+build-able:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    able_src="../able"
+    if [ ! -d "$able_src/v12" ]; then
+        echo "Error: Able source not found at $able_src/v12"
+        exit 1
+    fi
+    echo "Building able-v12-base Docker image..."
+    ctx=$(mktemp /tmp/able-ctx-XXXXXX.tar)
+    trap "rm -f $ctx" EXIT
+    tar -C "$able_src" \
+        --exclude='.gocache' \
+        --exclude='.gomodcache' \
+        --exclude='target' \
+        --exclude='tmp' \
+        --exclude='.tmp' \
+        --exclude='node_modules' \
+        -cf "$ctx" v12/interpreters/go v12/parser/tree-sitter-able v12/stdlib v12/kernel
+    tar -C able-base -rf "$ctx" Dockerfile
+    docker build -t able-v12-base - < "$ctx"
+    echo "Done. able-v12-base image is ready."
+
 # Start local HTTP server for report
 serve PORT='8080':
     python3 -m http.server {{PORT}}
